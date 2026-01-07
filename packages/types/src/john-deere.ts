@@ -85,3 +85,55 @@ export interface JDApiResponse<T> {
   total: number;
   links: JDLink[];
 }
+
+export interface JDFarm {
+  '@type': 'Farm';
+  id: string;
+  name: string;
+  links: JDLink[];
+}
+
+export interface JDClient {
+  '@type': 'Client';
+  id: string;
+  name: string;
+  links: JDLink[];
+}
+
+export interface JDMapLayer {
+  '@type': 'MapLayer';
+  id: string;
+  name: string;
+  type: string;
+  dateCreated?: string;
+  dateModified?: string;
+  links: JDLink[];
+}
+
+export interface JDCropType {
+  '@type': 'CropType';
+  id: string;
+  name: string;
+  links: JDLink[];
+}
+
+export interface JDUser {
+  '@type': 'User';
+  id: string;
+  accountName: string;
+  givenName?: string;
+  familyName?: string;
+  userType?: string;
+  links: JDLink[];
+}
+
+export interface JDAsset {
+  '@type': 'Asset';
+  id: string;
+  title: string;
+  assetType: string;
+  assetCategory?: string;
+  assetSubType?: string;
+  serialNumber?: string;
+  links: JDLink[];
+}

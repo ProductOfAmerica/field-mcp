@@ -78,7 +78,7 @@ export interface UsageAggregate {
 }
 
 export const TIER_LIMITS = {
-  free: { monthly: 1000, perMinute: 10 },
+  free: { monthly: 1000, perMinute: 60 },
   developer: { monthly: 50000, perMinute: 100 },
   startup: { monthly: 250000, perMinute: 500 },
   enterprise: { monthly: Infinity, perMinute: 1000 },

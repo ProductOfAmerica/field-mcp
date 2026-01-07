@@ -12,6 +12,8 @@
     "lint:fix": "biome check --write .",
     "check": "turbo check",
     "clean": "turbo clean",
+    "test:e2e": "vitest run --config vitest.config.ts",
+    "test:e2e:watch": "vitest --config vitest.config.ts",
     "supabase:start": "supabase start --workdir packages/supabase",
     "supabase:stop": "supabase stop --workdir packages/supabase",
     "supabase:reset": "supabase db reset --workdir packages/supabase"
@@ -23,6 +25,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
     "turbo": "^2.7.3",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   }
 }
