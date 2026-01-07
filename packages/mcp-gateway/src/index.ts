@@ -62,6 +62,7 @@ async function handleCacheInvalidation(
   request: Request,
   env: Env,
 ): Promise<Response> {
+  console.log('[CACHE INVALIDATION] Request received');
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
@@ -109,9 +110,22 @@ async function handleCacheInvalidation(
     }
   }
 
-  deletions.push(env.RATE_LIMITS.delete(`rate:${developerId}`));
+  const now = new Date();
+  const prevMinute = new Date(now.getTime() - 60000);
+  const currentKey = `${now.getUTCFullYear()}-${now.getUTCMonth()}-${now.getUTCDate()}-${now.getUTCHours()}-${now.getUTCMinutes()}`;
+  const prevKey = `${prevMinute.getUTCFullYear()}-${prevMinute.getUTCMonth()}-${prevMinute.getUTCDate()}-${prevMinute.getUTCHours()}-${prevMinute.getUTCMinutes()}`;
+  deletions.push(
+    env.RATE_LIMITS.delete(`ratelimit:${developerId}:${currentKey}`),
+  );
+  deletions.push(env.RATE_LIMITS.delete(`ratelimit:${developerId}:${prevKey}`));
+  console.log(
+    `[CACHE INVALIDATION] Deleting keys for developer ${developerId}: ${currentKey}, ${prevKey}`,
+  );
 
   await Promise.all(deletions);
+  console.log(
+    `[CACHE INVALIDATION] Deleted ${apiKeys?.length ?? 0} API key cache entries and rate limit keys`,
+  );
 
   return new Response(
     JSON.stringify({
