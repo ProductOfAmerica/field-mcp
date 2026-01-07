@@ -150,6 +150,5 @@ vite.config.ts.timestamp-*
 .idea/
 .vscode/
 
-docs/plans/
 .vercel
 .env*.local
