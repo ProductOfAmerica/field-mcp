@@ -25,7 +25,7 @@ interface HeaderProps {
 export function Header({ user, breadcrumbs = [] }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 before:absolute before:inset-0 before:bg-background/60 before:backdrop-blur-md before:mask-[linear-gradient(var(--card),var(--card)_80%,transparent_100%)]">
-      <div className="relative z-[51] mx-auto mt-3 flex w-[calc(100%-2rem)] max-w-[calc(1280px-3rem)] items-center justify-between rounded-xl border bg-card px-4 py-2 shadow-sm sm:w-[calc(100%-3rem)] sm:px-6">
+      <div className="relative z-[51] mx-auto mt-3 flex w-[calc(100%-2rem)] max-w-[calc(1280px-3rem)] items-center justify-between rounded-xl border border-border/60 bg-card px-4 py-2 shadow-md sm:w-[calc(100%-3rem)] sm:px-6">
         <div className="flex items-center gap-1.5 sm:gap-4">
           <SidebarTrigger className="[&_svg]:!size-5" />
           <Separator orientation="vertical" className="hidden h-4 sm:block" />

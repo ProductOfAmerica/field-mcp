@@ -56,21 +56,21 @@ export default async function DashboardPage() {
           value={subscription?.tier ?? 'Free'}
           description="Upgrade to increase limits"
           icon={GaugeIcon}
-          iconClassName="bg-blue-100 text-blue-600"
+          iconClassName="bg-primary/10 text-primary"
         />
         <StatsCard
           title="Requests This Month"
           value={`${requestsThisMonth.toLocaleString()} / ${limit.toLocaleString()}`}
           description="Monthly API requests"
           icon={ActivityIcon}
-          iconClassName="bg-purple-100 text-purple-600"
+          iconClassName="bg-primary/10 text-primary"
         />
         <StatsCard
           title="Status"
           value="Active"
           description="All systems operational"
           icon={CheckCircleIcon}
-          iconClassName="bg-green-100 text-green-600"
+          iconClassName="bg-primary/10 text-primary"
         />
       </div>
 

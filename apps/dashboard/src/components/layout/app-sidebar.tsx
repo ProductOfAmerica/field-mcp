@@ -59,7 +59,7 @@ export function AppSidebar({ usage, plan = 'Free' }: AppSidebarProps) {
   const usagePercentage = usage ? (usage.used / usage.limit) * 100 : 0;
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="border-r">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
