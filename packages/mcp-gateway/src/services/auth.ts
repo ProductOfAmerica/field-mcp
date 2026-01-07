@@ -1,11 +1,7 @@
 import type { ApiKeyValidation } from '@agrimcp/types';
 import { createClient } from '@supabase/supabase-js';
-
-interface Env {
-  SUPABASE_URL: string;
-  SUPABASE_SERVICE_KEY: string;
-  API_KEY_CACHE: KVNamespace;
-}
+import { API_KEY_CACHE_TTL } from '../lib/constants.js';
+import type { Env } from '../lib/types.js';
 
 async function sha256(str: string): Promise<string> {
   const encoder = new TextEncoder();
@@ -122,7 +118,7 @@ export async function validateApiKey(
   };
 
   await env.API_KEY_CACHE.put(`key:${keyPrefix}`, JSON.stringify(result), {
-    expirationTtl: 300,
+    expirationTtl: API_KEY_CACHE_TTL,
   });
 
   return result;

@@ -9,12 +9,20 @@ INTERNAL_SECRET = "dev_internal_secret_do_not_use_in_prod"
 
 [[kv_namespaces]]
 binding = "RATE_LIMITS"
-id = "09f6e46b18bf4bec87b4dbb308e613d9"
+id = "local_rate_limits"
 
 [[kv_namespaces]]
 binding = "API_KEY_CACHE"
-id = "d2b9c7a7951f4138b852946ad284310f"
+id = "local_api_key_cache"
 
 [[services]]
 binding = "JOHN_DEERE_MCP"
 service = "agrimcp-john-deere"
+
+[[durable_objects.bindings]]
+name = "MONTHLY_COUNTER"
+class_name = "MonthlyUsageCounter"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MonthlyUsageCounter"]

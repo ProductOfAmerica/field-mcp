@@ -1,7 +1,4 @@
-interface Env {
-  JOHN_DEERE_MCP: Fetcher;
-  GATEWAY_SECRET: string;
-}
+import type { Env } from '../lib/types.js';
 
 export async function routeToProvider(
   request: Request,
