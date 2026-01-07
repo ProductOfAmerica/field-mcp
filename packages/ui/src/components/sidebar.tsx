@@ -24,6 +24,21 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';
 import * as React from 'react';
 
+interface CookieStore {
+  set(options: {
+    name: string;
+    value: string;
+    path?: string;
+    expires?: number;
+  }): Promise<void>;
+}
+
+declare global {
+  interface Window {
+    cookieStore?: CookieStore;
+  }
+}
+
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = '16rem';
@@ -82,7 +97,14 @@ function SidebarProvider({
       }
 
       // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+      if ('cookieStore' in window && window.cookieStore) {
+        window.cookieStore.set({
+          name: SIDEBAR_COOKIE_NAME,
+          value: String(openState),
+          path: '/',
+          expires: Date.now() + SIDEBAR_COOKIE_MAX_AGE * 1000,
+        });
+      }
     },
     [setOpenProp, open],
   );
@@ -90,7 +112,7 @@ function SidebarProvider({
   // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
     return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
-  }, [isMobile, setOpen, setOpenMobile]);
+  }, [isMobile, setOpen]);
 
   // Adds a keyboard shortcut to toggle the sidebar.
   React.useEffect(() => {
@@ -122,7 +144,7 @@ function SidebarProvider({
       setOpenMobile,
       toggleSidebar,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
+    [state, open, setOpen, isMobile, openMobile, toggleSidebar],
   );
 
   return (
