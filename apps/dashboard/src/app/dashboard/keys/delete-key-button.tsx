@@ -54,7 +54,7 @@ export function DeleteKeyButton({ keyId, keyName }: DeleteKeyButtonProps) {
           {loading ? 'Revoking...' : 'Revoke'}
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent onOverlayClick={() => !loading && setOpen(false)}>
         <AlertDialogHeader>
           <AlertDialogTitle>Revoke API Key</AlertDialogTitle>
           <AlertDialogDescription>

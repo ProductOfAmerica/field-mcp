@@ -12,7 +12,7 @@ export function generateApiKey(): { key: string; prefix: string } {
   }
 
   const key = PREFIX + randomPart;
-  const prefix = key.slice(0, 15);
+  const prefix = key.slice(0, 14);
 
   return { key, prefix };
 }
