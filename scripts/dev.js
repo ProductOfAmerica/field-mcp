@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import {
   checkDependencies,
   checkDockerRunning,
+  cleanWranglerCache,
   colors,
   DASHBOARD_DIR,
   ENV_FILE,
@@ -112,6 +113,7 @@ function startMcpJohnDeere() {
 async function main() {
   console.log('\n🌾 AgriMCP Development Environment\n');
 
+  cleanWranglerCache();
   checkDockerRunning();
   const { hasStripe } = checkDependencies();
   checkSecretsMatch();

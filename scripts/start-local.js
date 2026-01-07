@@ -4,8 +4,11 @@ import { execSync } from 'node:child_process';
 import {
   checkDependencies,
   checkDockerRunning,
+  cleanWranglerCache,
   colors,
   DASHBOARD_DIR,
+  GATEWAY_DIR,
+  JOHN_DEERE_DIR,
   log,
   setupCleanup,
   spawnWithPrefix,
@@ -26,9 +29,32 @@ function startNextProd() {
   return spawnWithPrefix('pnpm', ['start'], DASHBOARD_DIR, 'NEXT', colors.blue);
 }
 
+function startMcpGateway() {
+  log('GATEWAY', colors.cyan, 'Starting MCP Gateway on port 8787...');
+  return spawnWithPrefix(
+    'pnpm',
+    ['dev', '--port', '8787'],
+    GATEWAY_DIR,
+    'GATEWAY',
+    colors.cyan,
+  );
+}
+
+function startMcpJohnDeere() {
+  log('JOHN-DEERE', colors.green, 'Starting John Deere MCP on port 8788...');
+  return spawnWithPrefix(
+    'pnpm',
+    ['dev', '--port', '8788'],
+    JOHN_DEERE_DIR,
+    'JOHN-DEERE',
+    colors.green,
+  );
+}
+
 async function main() {
   console.log('\n🌾 AgriMCP Local Production Environment\n');
 
+  cleanWranglerCache();
   checkDockerRunning();
   const { hasStripe } = checkDependencies();
 
@@ -54,10 +80,14 @@ async function main() {
 
   const functionsProc = startSupabaseFunctions();
   const nextProc = startNextProd();
+  const gatewayProc = startMcpGateway();
+  const johnDeereProc = startMcpJohnDeere();
 
   console.log(`\n${'─'.repeat(50)}`);
   log('INFO', colors.cyan, 'All services started in PRODUCTION mode!');
   log('INFO', colors.cyan, 'Dashboard: http://localhost:3000');
+  log('INFO', colors.cyan, 'MCP Gateway: http://localhost:8787');
+  log('INFO', colors.cyan, 'John Deere MCP: http://localhost:8788');
   log(
     'INFO',
     colors.cyan,
@@ -65,7 +95,13 @@ async function main() {
   );
   console.log(`${'─'.repeat(50)}\n`);
 
-  setupCleanup([nextProc, functionsProc, stripeProc]);
+  setupCleanup([
+    nextProc,
+    functionsProc,
+    stripeProc,
+    gatewayProc,
+    johnDeereProc,
+  ]);
 }
 
 main().catch((err) => {

@@ -1,5 +1,5 @@
 import { execSync, spawn } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -250,4 +250,18 @@ export function setupCleanup(processes, stopSupabase = true) {
 
   process.on('SIGINT', cleanup);
   process.on('SIGTERM', cleanup);
+}
+
+export function cleanWranglerCache() {
+  const wranglerDirs = [
+    join(GATEWAY_DIR, '.wrangler'),
+    join(JOHN_DEERE_DIR, '.wrangler'),
+  ];
+
+  for (const dir of wranglerDirs) {
+    if (existsSync(dir)) {
+      rmSync(dir, { recursive: true, force: true });
+      log('CLEANUP', colors.yellow, `Deleted ${dir}`);
+    }
+  }
 }
