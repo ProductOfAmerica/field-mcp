@@ -109,6 +109,7 @@ export async function toolHandler(input, client) {
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_KEY`
 - `GATEWAY_SECRET` (shared secret for MCP server auth)
+- `INTERNAL_SECRET` (secret for internal cache invalidation endpoint)
 
 ### packages/mcp-john-deere (Cloudflare secrets)
 - `SUPABASE_URL`
@@ -126,6 +127,8 @@ export async function toolHandler(input, client) {
 - `JOHN_DEERE_REDIRECT_URI`
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SECRET`
+- `GATEWAY_INTERNAL_URL` (gateway URL for cache invalidation)
+- `GATEWAY_INTERNAL_SECRET` (must match gateway's INTERNAL_SECRET)
 
 ## API Reference
 

@@ -1,3 +1,4 @@
+import { createClient } from '@supabase/supabase-js';
 import { extractApiKey, validateApiKey } from './auth.js';
 import { ApiError, Errors } from './errors.js';
 import { checkRateLimit } from './rate-limit.js';
@@ -12,6 +13,7 @@ interface Env {
   JOHN_DEERE_MCP: Fetcher;
   ENVIRONMENT: string;
   GATEWAY_SECRET: string;
+  INTERNAL_SECRET: string;
 }
 
 const MAX_BODY_SIZE = 100 * 1024;
@@ -56,6 +58,61 @@ function addCorsHeaders(response: Response): Response {
   return newResponse;
 }
 
+async function handleCacheInvalidation(
+  request: Request,
+  env: Env,
+): Promise<Response> {
+  if (request.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const secret = request.headers.get('X-Internal-Secret');
+  if (secret !== env.INTERNAL_SECRET) {
+    return new Response(JSON.stringify({ error: 'Forbidden' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  let body: { developerId?: string };
+  try {
+    body = await request.json();
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { developerId } = body;
+  if (!developerId) {
+    return new Response(JSON.stringify({ error: 'Missing developerId' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_KEY);
+  const { data: apiKeys } = await supabase
+    .from('api_keys')
+    .select('key_prefix')
+    .eq('developer_id', developerId);
+
+  if (apiKeys && apiKeys.length > 0) {
+    await Promise.all(
+      apiKeys.map((key) => env.API_KEY_CACHE.delete(`key:${key.key_prefix}`)),
+    );
+  }
+
+  return new Response(
+    JSON.stringify({ invalidated: apiKeys?.length ?? 0 }),
+    { status: 200, headers: { 'Content-Type': 'application/json' } },
+  );
+}
+
 export default {
   async fetch(
     request: Request,
@@ -76,6 +133,10 @@ export default {
       return new Response(JSON.stringify({ status: 'ok' }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
+    }
+
+    if (url.pathname === '/internal/invalidate-cache') {
+      return handleCacheInvalidation(request, env);
     }
 
     if (request.method !== 'POST') {

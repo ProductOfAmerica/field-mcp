@@ -5,6 +5,7 @@ compatibility_date = "2025-01-01"
 [vars]
 ENVIRONMENT = "development"
 GATEWAY_SECRET = "dev_gateway_secret_do_not_use_in_prod"
+INTERNAL_SECRET = "dev_internal_secret_do_not_use_in_prod"
 
 [[kv_namespaces]]
 binding = "RATE_LIMITS"

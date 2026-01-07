@@ -9,6 +9,23 @@ const TIER_LIMITS: Record<string, number> = {
   startup: 250000,
 };
 
+async function invalidateGatewayCache(developerId: string): Promise<void> {
+  if (!config.gateway.internalSecret) return;
+
+  try {
+    await fetch(`${config.gateway.internalUrl}/internal/invalidate-cache`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Internal-Secret': config.gateway.internalSecret,
+      },
+      body: JSON.stringify({ developerId }),
+    });
+  } catch (err) {
+    console.error('Failed to invalidate gateway cache:', err);
+  }
+}
+
 export async function POST(request: Request) {
   const body = await request.text();
   const signature = request.headers.get('stripe-signature')!;
@@ -46,6 +63,7 @@ export async function POST(request: Request) {
           })
           .eq('developer_id', developerId);
         revalidateTag(`subscription-${developerId}`, { expire: 0 });
+        await invalidateGatewayCache(developerId);
       }
       break;
     }
@@ -87,6 +105,7 @@ export async function POST(request: Request) {
         .single();
       if (updatedSub) {
         revalidateTag(`subscription-${updatedSub.developer_id}`, { expire: 0 });
+        await invalidateGatewayCache(updatedSub.developer_id);
       }
       break;
     }
@@ -106,6 +125,7 @@ export async function POST(request: Request) {
         .single();
       if (deletedSub) {
         revalidateTag(`subscription-${deletedSub.developer_id}`, { expire: 0 });
+        await invalidateGatewayCache(deletedSub.developer_id);
       }
       break;
     }

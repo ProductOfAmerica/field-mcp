@@ -34,6 +34,11 @@ export const config = {
     tokenUrl:
       'https://signin.johndeere.com/oauth2/aus78tnlaysMraFhC1t7/v1/token',
   },
+
+  gateway: {
+    internalUrl: process.env.GATEWAY_INTERNAL_URL ?? 'http://localhost:8787',
+    internalSecret: process.env.GATEWAY_INTERNAL_SECRET ?? '',
+  },
 } as const;
 
 export const TIER_TO_PRICE: Record<string, string> = {
