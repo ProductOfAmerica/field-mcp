@@ -1,4 +1,7 @@
+import dotenv from 'dotenv';
 import { defineConfig } from 'vitest/config';
+
+dotenv.config({ path: 'tests/e2e/.env' });
 
 export default defineConfig({
   test: {

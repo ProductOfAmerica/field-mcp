@@ -1,7 +1,6 @@
 const GATEWAY_URL = process.env.MCP_GATEWAY_URL || 'http://localhost:8787';
-const API_KEY =
-  process.env.TEST_API_KEY || 'agri_live_Js80KQWsQhACtvQJjouq5SDSg4AAxBtp';
-const FARMER_ID = process.env.TEST_FARMER_ID || 'test-id';
+const API_KEY = process.env.TEST_API_KEY!;
+const FARMER_ID = process.env.TEST_FARMER_ID!;
 
 interface McpResponse<T = unknown> {
   content?: Array<{ type: string; text: string }>;
