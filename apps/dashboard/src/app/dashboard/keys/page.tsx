@@ -12,6 +12,13 @@ import {
   CardTitle,
 } from '@agrimcp/ui/components/card';
 import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@agrimcp/ui/components/empty';
+import {
   Table,
   TableBody,
   TableCell,
@@ -97,16 +104,18 @@ export default async function KeysPage() {
               </TableBody>
             </Table>
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="flex size-12 items-center justify-center rounded-full bg-muted">
-                <KeyIcon className="size-6 text-muted-foreground" />
-              </div>
-              <h3 className="mt-4 text-lg font-semibold">No API keys yet</h3>
-              <p className="mb-4 mt-2 text-sm text-muted-foreground">
-                Create your first API key to start using the AgriMCP API
-              </p>
+            <Empty className="border-0 p-0">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <KeyIcon />
+                </EmptyMedia>
+                <EmptyTitle>No API keys yet</EmptyTitle>
+                <EmptyDescription>
+                  Create your first API key to start using the AgriMCP API.
+                </EmptyDescription>
+              </EmptyHeader>
               <CreateKeyButton />
-            </div>
+            </Empty>
           )}
         </CardContent>
       </Card>

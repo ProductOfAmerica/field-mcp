@@ -12,6 +12,13 @@ import {
   CardTitle,
 } from '@agrimcp/ui/components/card';
 import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@agrimcp/ui/components/empty';
+import {
   Table,
   TableBody,
   TableCell,
@@ -122,18 +129,18 @@ export default async function ConnectionsPage() {
               </TableBody>
             </Table>
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="flex size-12 items-center justify-center rounded-full bg-muted">
-                <LinkIcon className="size-6 text-muted-foreground" />
-              </div>
-              <h3 className="mt-4 text-lg font-semibold">
-                No farmer connections yet
-              </h3>
-              <p className="mb-4 mt-2 text-sm text-muted-foreground">
-                Connect a farmer&apos;s account to start accessing their data
-              </p>
+            <Empty className="border-0 p-0">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <LinkIcon />
+                </EmptyMedia>
+                <EmptyTitle>No farmer connections yet</EmptyTitle>
+                <EmptyDescription>
+                  Connect a farmer's account to start accessing their data.
+                </EmptyDescription>
+              </EmptyHeader>
               <ConnectJohnDeereButton />
-            </div>
+            </Empty>
           )}
         </CardContent>
       </Card>

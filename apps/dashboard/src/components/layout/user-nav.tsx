@@ -22,8 +22,8 @@ import {
   SunIcon,
   UserIcon,
 } from 'lucide-react';
-import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
 
 interface UserNavProps {
   user: {
