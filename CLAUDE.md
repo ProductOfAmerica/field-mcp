@@ -108,12 +108,14 @@ export async function toolHandler(input, client) {
 ### packages/mcp-gateway (Cloudflare secrets)
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_KEY`
+- `GATEWAY_SECRET` (shared secret for MCP server auth)
 
 ### packages/mcp-john-deere (Cloudflare secrets)
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_KEY`
 - `JOHN_DEERE_CLIENT_ID`
 - `JOHN_DEERE_CLIENT_SECRET`
+- `GATEWAY_SECRET` (must match gateway's secret)
 
 ### apps/dashboard (.env.local)
 - `NEXT_PUBLIC_SUPABASE_URL`
