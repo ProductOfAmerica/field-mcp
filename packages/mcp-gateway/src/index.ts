@@ -13,18 +13,40 @@ interface Env {
   ENVIRONMENT: string;
 }
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Farmer-ID',
+  'Access-Control-Max-Age': '86400',
+};
+
+function addCorsHeaders(response: Response): Response {
+  const newResponse = new Response(response.body, response);
+  Object.entries(corsHeaders).forEach(([key, value]) => {
+    newResponse.headers.set(key, value);
+  });
+  return newResponse;
+}
+
 export default {
   async fetch(
     request: Request,
     env: Env,
     ctx: ExecutionContext,
   ): Promise<Response> {
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders,
+      });
+    }
+
     const startTime = Date.now();
     const url = new URL(request.url);
 
     if (url.pathname === '/health') {
       return new Response(JSON.stringify({ status: 'ok' }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
 
@@ -108,13 +130,13 @@ export default {
         String(rateLimit.remaining),
       );
 
-      return modifiedResponse;
+      return addCorsHeaders(modifiedResponse);
     } catch (error) {
       if (error instanceof ApiError) {
-        return error.toResponse();
+        return addCorsHeaders(error.toResponse());
       }
       console.error('Unexpected error:', error);
-      return Errors.internal().toResponse();
+      return addCorsHeaders(Errors.internal().toResponse());
     }
   },
 };

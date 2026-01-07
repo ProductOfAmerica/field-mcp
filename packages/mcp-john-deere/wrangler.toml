@@ -1,6 +1,7 @@
 name = "agrimcp-john-deere"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
+workers_dev = false
 
 [vars]
 ENVIRONMENT = "development"
