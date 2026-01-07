@@ -5,11 +5,16 @@ MCP infrastructure platform for agricultural APIs. Developers integrate once, ac
 ## Quick Commands
 
 ```bash
-pnpm install          # Install all dependencies
-pnpm build            # Build all packages
-pnpm dev              # Start dev servers
-pnpm lint             # Run Biome linter
-pnpm check            # TypeScript type check
+pnpm build            # Build all packages (turbo)
+pnpm dev              # Start dashboard + workers in dev mode (hot reload)
+pnpm start:local      # Build and run all services locally (production-like)
+pnpm lint             # Run Biome linter (check)
+pnpm lint:fix         # Run Biome linter with auto-fix
+pnpm check            # TypeScript type check (turbo)
+pnpm clean            # Clean build artifacts (turbo)
+pnpm supabase:start   # Start local Supabase
+pnpm supabase:stop    # Stop local Supabase
+pnpm supabase:reset   # Reset Supabase database
 ```
 
 ## Architecture
