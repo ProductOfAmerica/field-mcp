@@ -12,8 +12,7 @@ import {
   AlertDialogTrigger,
 } from '@agrimcp/ui/components/alert-dialog';
 import { Button } from '@agrimcp/ui/components/button';
-import { TrashIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { LoaderIcon, TrashIcon } from 'lucide-react';
 import { useState } from 'react';
 
 interface DeleteKeyButtonProps {
@@ -24,7 +23,6 @@ interface DeleteKeyButtonProps {
 export function DeleteKeyButton({ keyId, keyName }: DeleteKeyButtonProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   async function handleDelete() {
     setLoading(true);
@@ -34,9 +32,9 @@ export function DeleteKeyButton({ keyId, keyName }: DeleteKeyButtonProps) {
 
     if (res.ok) {
       setOpen(false);
-      router.refresh();
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
@@ -46,9 +44,14 @@ export function DeleteKeyButton({ keyId, keyName }: DeleteKeyButtonProps) {
           variant="ghost"
           size="sm"
           className="text-destructive hover:text-destructive"
+          disabled={loading}
         >
-          <TrashIcon className="mr-1 size-4" />
-          Revoke
+          {loading ? (
+            <LoaderIcon className="mr-1 size-4 animate-spin" />
+          ) : (
+            <TrashIcon className="mr-1 size-4" />
+          )}
+          {loading ? 'Revoking...' : 'Revoke'}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

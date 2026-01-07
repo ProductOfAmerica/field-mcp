@@ -3,7 +3,6 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@agrimcp/ui/components/alert';
-import { Badge } from '@agrimcp/ui/components/badge';
 import {
   Card,
   CardContent,
@@ -11,92 +10,24 @@ import {
   CardHeader,
   CardTitle,
 } from '@agrimcp/ui/components/card';
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@agrimcp/ui/components/empty';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@agrimcp/ui/components/table';
 import { KeyIcon } from 'lucide-react';
+import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { TableSkeleton } from '@/components/skeletons';
 import { getApiKeys } from '@/lib/data';
 import { createClient } from '@/lib/supabase/server';
 import { CreateKeyButton } from './create-key-button';
-import { DeleteKeyButton } from './delete-key-button';
+import { RealtimeKeysTable } from './realtime-keys-table';
 
-async function KeysTable({ userId }: { userId: string }) {
+async function KeysTableWrapper({ userId }: { userId: string }) {
   const keys = await getApiKeys(userId);
 
-  if (!keys || keys.length === 0) {
-    return (
-      <Empty className="border-0 p-0">
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <KeyIcon />
-          </EmptyMedia>
-          <EmptyTitle>No API keys yet</EmptyTitle>
-          <EmptyDescription>
-            Create your first API key to start using the AgriMCP API.
-          </EmptyDescription>
-        </EmptyHeader>
-        <CreateKeyButton />
-      </Empty>
-    );
-  }
-
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Key</TableHead>
-          <TableHead>Created</TableHead>
-          <TableHead>Last Used</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {keys.map((key) => (
-          <TableRow key={key.id}>
-            <TableCell className="font-medium">
-              {key.name || 'Unnamed key'}
-            </TableCell>
-            <TableCell>
-              <code className="rounded bg-muted px-2 py-1 text-sm">
-                {key.key_prefix}...
-              </code>
-            </TableCell>
-            <TableCell className="text-muted-foreground">
-              {new Date(key.created_at).toLocaleDateString()}
-            </TableCell>
-            <TableCell className="text-muted-foreground">
-              {key.last_used_at ? (
-                new Date(key.last_used_at).toLocaleDateString()
-              ) : (
-                <Badge variant="outline">Never</Badge>
-              )}
-            </TableCell>
-            <TableCell className="text-right">
-              <DeleteKeyButton keyId={key.id} keyName={key.name} />
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
+  return <RealtimeKeysTable serverKeys={keys ?? []} userId={userId} />;
 }
 
 export default async function KeysPage() {
+  await connection();
+  
   const supabase = await createClient();
   const {
     data: { user },
@@ -123,7 +54,7 @@ export default async function KeysPage() {
         </CardHeader>
         <CardContent>
           <Suspense fallback={<TableSkeleton columns={5} />}>
-            <KeysTable userId={user!.id} />
+            <KeysTableWrapper userId={user!.id} />
           </Suspense>
         </CardContent>
       </Card>

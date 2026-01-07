@@ -32,7 +32,7 @@ export async function getToken(
 
   const { data: connection, error } = await supabase
     .from('farmer_connections')
-    .select('*')
+    .select('id, access_token_encrypted, refresh_token_encrypted, token_expires_at')
     .eq('developer_id', developerId)
     .eq('farmer_identifier', farmerId)
     .eq('provider', 'john_deere')

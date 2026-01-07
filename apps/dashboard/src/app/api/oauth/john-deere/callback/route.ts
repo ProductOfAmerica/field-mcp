@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { config } from '@/lib/config';
@@ -141,6 +142,8 @@ export async function GET(request: Request) {
       ),
     );
   }
+
+  revalidatePath('/dashboard/connections');
 
   return NextResponse.redirect(
     new URL(`${stateData.returnUrl}?success=true`, request.url),

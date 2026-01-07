@@ -22,7 +22,6 @@ const colors = {
 };
 
 function log(prefix, color, message) {
-  const _timestamp = new Date().toLocaleTimeString();
   console.log(`${color}[${prefix}]${colors.reset} ${message}`);
 }
 
@@ -257,6 +256,46 @@ function startNextDev() {
   return proc;
 }
 
+function startMcpGateway() {
+  log('GATEWAY', colors.cyan, 'Starting MCP Gateway on port 8787...');
+
+  const proc = spawn('pnpm', ['dev', '--port', '8787'], {
+    cwd: join(ROOT, 'packages', 'mcp-gateway'),
+    shell: true,
+    stdio: 'pipe',
+  });
+
+  proc.stdout.on('data', (data) => {
+    process.stdout.write(`${colors.cyan}[GATEWAY]${colors.reset} ${data}`);
+  });
+
+  proc.stderr.on('data', (data) => {
+    process.stderr.write(`${colors.cyan}[GATEWAY]${colors.reset} ${data}`);
+  });
+
+  return proc;
+}
+
+function startMcpJohnDeere() {
+  log('JOHN-DEERE', colors.green, 'Starting John Deere MCP on port 8788...');
+
+  const proc = spawn('pnpm', ['dev', '--port', '8788'], {
+    cwd: join(ROOT, 'packages', 'mcp-john-deere'),
+    shell: true,
+    stdio: 'pipe',
+  });
+
+  proc.stdout.on('data', (data) => {
+    process.stdout.write(`${colors.green}[JOHN-DEERE]${colors.reset} ${data}`);
+  });
+
+  proc.stderr.on('data', (data) => {
+    process.stderr.write(`${colors.green}[JOHN-DEERE]${colors.reset} ${data}`);
+  });
+
+  return proc;
+}
+
 function startSupabaseFunctions() {
   log('FUNCTIONS', colors.yellow, 'Starting Supabase Edge Functions...');
 
@@ -303,10 +342,14 @@ async function main() {
 
   const functionsProc = startSupabaseFunctions();
   const nextProc = startNextDev();
+  const gatewayProc = startMcpGateway();
+  const johnDeereProc = startMcpJohnDeere();
 
   console.log(`\n${'─'.repeat(50)}`);
   log('INFO', colors.cyan, 'All services started!');
   log('INFO', colors.cyan, 'Dashboard: http://localhost:3000');
+  log('INFO', colors.cyan, 'MCP Gateway: http://localhost:8787');
+  log('INFO', colors.cyan, 'John Deere MCP: http://localhost:8788');
   log(
     'INFO',
     colors.cyan,
@@ -319,6 +362,8 @@ async function main() {
     nextProc?.kill();
     functionsProc?.kill();
     stripeProc?.kill();
+    gatewayProc?.kill();
+    johnDeereProc?.kill();
 
     log('INFO', colors.yellow, 'Stopping Supabase...');
     try {

@@ -14,7 +14,6 @@ import {
 import { Input } from '@agrimcp/ui/components/input';
 import { Label } from '@agrimcp/ui/components/label';
 import { CheckIcon, CopyIcon, PlusIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export function CreateKeyButton() {
@@ -23,7 +22,6 @@ export function CreateKeyButton() {
   const [loading, setLoading] = useState(false);
   const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -54,9 +52,6 @@ export function CreateKeyButton() {
     setName('');
     setCreatedKey(null);
     setCopied(false);
-    if (createdKey) {
-      router.refresh();
-    }
   }
 
   return (

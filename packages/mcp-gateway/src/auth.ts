@@ -40,10 +40,18 @@ export async function validateApiKey(
       id,
       developer_id,
       is_active,
-      developers (
+      developers!inner (
         id,
         email,
-        company_name
+        company_name,
+        subscriptions (
+          id,
+          tier,
+          status,
+          monthly_request_limit,
+          current_period_start,
+          current_period_end
+        )
       )
     `,
     )
@@ -55,17 +63,21 @@ export async function validateApiKey(
     return { valid: false };
   }
 
-  const { data: subscription } = await supabase
-    .from('subscriptions')
-    .select('*')
-    .eq('developer_id', keyData.developer_id)
-    .single();
-
   const developer = keyData.developers as unknown as {
     id: string;
     email: string;
     company_name: string | null;
+    subscriptions: Array<{
+      id: string;
+      tier: string;
+      status: string;
+      monthly_request_limit: number;
+      current_period_start: string | null;
+      current_period_end: string | null;
+    }>;
   };
+
+  const subscription = developer.subscriptions?.[0];
 
   const result: ApiKeyValidation = {
     valid: true,
@@ -76,7 +88,21 @@ export async function validateApiKey(
       created_at: '',
       updated_at: '',
     },
-    subscription: subscription || undefined,
+    subscription: subscription
+      ? {
+          id: subscription.id,
+          developer_id: developer.id,
+          stripe_subscription_id: null,
+          stripe_customer_id: null,
+          tier: subscription.tier as 'free' | 'developer' | 'startup' | 'enterprise',
+          status: subscription.status as 'active' | 'canceled' | 'past_due' | 'trialing',
+          monthly_request_limit: subscription.monthly_request_limit,
+          current_period_start: subscription.current_period_start,
+          current_period_end: subscription.current_period_end,
+          created_at: '',
+          updated_at: '',
+        }
+      : undefined,
     keyId: keyData.id,
   };
 
