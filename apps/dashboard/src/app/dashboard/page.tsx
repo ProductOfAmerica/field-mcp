@@ -1,3 +1,7 @@
+import { ActivityIcon, CheckCircleIcon, GaugeIcon } from 'lucide-react';
+import { QuickStartCard } from '@/components/dashboard/quick-start-card';
+import { StatsCard } from '@/components/dashboard/stats-card';
+import { UsageChart } from '@/components/dashboard/usage-chart';
 import { createClient } from '@/lib/supabase/server';
 
 export default async function DashboardPage() {
@@ -12,57 +16,67 @@ export default async function DashboardPage() {
     .eq('id', user?.id)
     .single();
 
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   const { data: usageStats } = await supabase
     .from('usage_logs')
-    .select('id')
+    .select('id, request_timestamp')
     .eq('developer_id', user?.id)
-    .gte(
-      'request_timestamp',
-      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    );
+    .gte('request_timestamp', thirtyDaysAgo.toISOString());
 
   const requestsThisMonth = usageStats?.length ?? 0;
   const subscription = developer?.subscriptions?.[0];
   const limit = subscription?.monthly_request_limit ?? 1000;
 
-  return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+  const chartData = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+    const dateStr = date.toISOString().split('T')[0];
+    const dayRequests =
+      usageStats?.filter((log) => {
+        const logDate = new Date(log.request_timestamp)
+          .toISOString()
+          .split('T')[0];
+        return logDate === dateStr;
+      }).length ?? 0;
+    chartData.push({ date: dateStr, requests: dayRequests });
+  }
 
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <div className="text-sm text-gray-500 mb-1">Plan</div>
-          <div className="text-2xl font-bold capitalize">
-            {subscription?.tier ?? 'Free'}
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <div className="text-sm text-gray-500 mb-1">Requests this month</div>
-          <div className="text-2xl font-bold">
-            {requestsThisMonth.toLocaleString()} / {limit.toLocaleString()}
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <div className="text-sm text-gray-500 mb-1">Status</div>
-          <div className="text-2xl font-bold text-green-600">Active</div>
-        </div>
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground">
+          Welcome back! Here&apos;s an overview of your API usage.
+        </p>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border">
-        <h2 className="text-lg font-semibold mb-4">Quick Start</h2>
-        <div className="space-y-4 text-gray-600">
-          <p>
-            1. Go to <strong>API Keys</strong> and create a new key
-          </p>
-          <p>
-            2. Go to <strong>Connections</strong> and connect a farmer&apos;s
-            John Deere account
-          </p>
-          <p>3. Use the MCP server endpoint with your AI application:</p>
-          <pre className="bg-gray-50 p-4 rounded-lg text-sm overflow-x-auto">
-            POST https://mcp.agrimcp.com/v1/john-deere
-          </pre>
-        </div>
+      <div className="grid gap-4 md:grid-cols-3">
+        <StatsCard
+          title="Current Plan"
+          value={subscription?.tier ?? 'Free'}
+          description="Upgrade to increase limits"
+          icon={GaugeIcon}
+          iconClassName="bg-blue-100 text-blue-600"
+        />
+        <StatsCard
+          title="Requests This Month"
+          value={`${requestsThisMonth.toLocaleString()} / ${limit.toLocaleString()}`}
+          description="Monthly API requests"
+          icon={ActivityIcon}
+          iconClassName="bg-purple-100 text-purple-600"
+        />
+        <StatsCard
+          title="Status"
+          value="Active"
+          description="All systems operational"
+          icon={CheckCircleIcon}
+          iconClassName="bg-green-100 text-green-600"
+        />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <UsageChart data={chartData} />
+        <QuickStartCard />
       </div>
     </div>
   );

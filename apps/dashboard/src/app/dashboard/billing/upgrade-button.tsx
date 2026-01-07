@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@agrimcp/ui/components/button';
 import { useState } from 'react';
 
 export function UpgradeButton({ tier }: { tier: 'developer' | 'startup' }) {
@@ -24,13 +25,8 @@ export function UpgradeButton({ tier }: { tier: 'developer' | 'startup' }) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleUpgrade}
-      disabled={loading}
-      className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50"
-    >
+    <Button onClick={handleUpgrade} disabled={loading} className="w-full">
       {loading ? 'Loading...' : 'Upgrade'}
-    </button>
+    </Button>
   );
 }

@@ -1,5 +1,7 @@
-import Link from 'next/link';
+import { SidebarInset, SidebarProvider } from '@agrimcp/ui/components/sidebar';
 import { redirect } from 'next/navigation';
+import { AppSidebar } from '@/components/layout/app-sidebar';
+import { Header } from '@/components/layout/header';
 import { createClient } from '@/lib/supabase/server';
 
 export default async function DashboardLayout({
@@ -16,50 +18,36 @@ export default async function DashboardLayout({
     redirect('/login');
   }
 
+  const { data: developer } = await supabase
+    .from('developers')
+    .select('*, subscriptions(*)')
+    .eq('id', user.id)
+    .single();
+
+  const { data: usageStats } = await supabase
+    .from('usage_logs')
+    .select('id')
+    .eq('developer_id', user.id)
+    .gte(
+      'request_timestamp',
+      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    );
+
+  const subscription = developer?.subscriptions?.[0];
+  const usage = {
+    used: usageStats?.length ?? 0,
+    limit: subscription?.monthly_request_limit ?? 1000,
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/dashboard" className="text-xl font-bold text-green-700">
-            AgriMCP
-          </Link>
-          <div className="flex items-center gap-6">
-            <Link
-              href="/dashboard"
-              className="text-gray-600 hover:text-gray-900"
-            >
-              Overview
-            </Link>
-            <Link
-              href="/dashboard/keys"
-              className="text-gray-600 hover:text-gray-900"
-            >
-              API Keys
-            </Link>
-            <Link
-              href="/dashboard/connections"
-              className="text-gray-600 hover:text-gray-900"
-            >
-              Connections
-            </Link>
-            <Link
-              href="/dashboard/billing"
-              className="text-gray-600 hover:text-gray-900"
-            >
-              Billing
-            </Link>
-            <form action="/api/auth/signout" method="POST">
-              <button
-                type="submit"
-                className="text-gray-600 hover:text-gray-900"
-              >
-                Sign out
-              </button>
-            </form>
-          </div>
-        </div>
-      </nav>
-      <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
-    </div>
+    <SidebarProvider>
+      <AppSidebar usage={usage} plan={subscription?.tier ?? 'Free'} />
+      <SidebarInset>
+        <Header user={{ email: user.email }} />
+        <main className="mx-auto size-full max-w-7xl flex-1 px-4 py-6 sm:px-6">
+          {children}
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@agrimcp/ui/components/button';
+import { ExternalLinkIcon } from 'lucide-react';
 import { useState } from 'react';
 
 export function ManageButton() {
@@ -22,13 +24,15 @@ export function ManageButton() {
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleManage}
-      disabled={loading}
-      className="text-green-600 hover:text-green-700 font-medium"
-    >
-      {loading ? 'Loading...' : 'Manage Subscription'}
-    </button>
+    <Button variant="outline" onClick={handleManage} disabled={loading}>
+      {loading ? (
+        'Loading...'
+      ) : (
+        <>
+          Manage Subscription
+          <ExternalLinkIcon className="ml-2 size-4" />
+        </>
+      )}
+    </Button>
   );
 }

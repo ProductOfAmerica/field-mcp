@@ -52,9 +52,15 @@ export async function POST(request: Request) {
     case 'customer.subscription.updated': {
       const subscription = event.data.object;
       const status = subscription.status === 'active' ? 'active' : 'past_due';
-      const cancelAtPeriodEnd = (subscription as unknown as { cancel_at_period_end: boolean }).cancel_at_period_end;
-      const periodStart = (subscription as unknown as { current_period_start: number }).current_period_start;
-      const periodEnd = (subscription as unknown as { current_period_end: number }).current_period_end;
+      const cancelAtPeriodEnd = (
+        subscription as unknown as { cancel_at_period_end: boolean }
+      ).cancel_at_period_end;
+      const periodStart = (
+        subscription as unknown as { current_period_start: number }
+      ).current_period_start;
+      const periodEnd = (
+        subscription as unknown as { current_period_end: number }
+      ).current_period_end;
 
       const updateData: Record<string, unknown> = {
         status,
@@ -62,10 +68,14 @@ export async function POST(request: Request) {
       };
 
       if (periodStart) {
-        updateData.current_period_start = new Date(periodStart * 1000).toISOString();
+        updateData.current_period_start = new Date(
+          periodStart * 1000,
+        ).toISOString();
       }
       if (periodEnd) {
-        updateData.current_period_end = new Date(periodEnd * 1000).toISOString();
+        updateData.current_period_end = new Date(
+          periodEnd * 1000,
+        ).toISOString();
       }
 
       await supabaseAdmin

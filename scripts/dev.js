@@ -178,7 +178,9 @@ async function startStripeWebhook() {
 
     proc.stderr.on('data', (data) => {
       const output = data.toString();
-      process.stderr.write(`${colors.magenta}[STRIPE]${colors.reset} ${output}`);
+      process.stderr.write(
+        `${colors.magenta}[STRIPE]${colors.reset} ${output}`,
+      );
 
       const match = output.match(/whsec_[a-zA-Z0-9]+/);
       if (match && !webhookSecret) {

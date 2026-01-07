@@ -1,3 +1,25 @@
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@agrimcp/ui/components/alert';
+import { Badge } from '@agrimcp/ui/components/badge';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@agrimcp/ui/components/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@agrimcp/ui/components/table';
+import { LinkIcon } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { ConnectJohnDeereButton } from './connect-john-deere-button';
 import { DisconnectButton } from './disconnect-button';
@@ -16,98 +38,125 @@ export default async function ConnectionsPage() {
     .order('created_at', { ascending: false });
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Farmer Connections</h1>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Farmer Connections
+          </h1>
+          <p className="text-muted-foreground">
+            Manage OAuth connections to farmer accounts.
+          </p>
+        </div>
         <ConnectJohnDeereButton />
       </div>
 
-      {connections && connections.length > 0 ? (
-        <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
-                  Farmer ID
-                </th>
-                <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
-                  Provider
-                </th>
-                <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
-                  Connected
-                </th>
-                <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
-                  Status
-                </th>
-                <th className="text-right px-6 py-3 text-sm font-medium text-gray-500">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {connections.map((conn) => {
-                const isExpired =
-                  conn.token_expires_at &&
-                  new Date(conn.token_expires_at) < new Date();
-                return (
-                  <tr key={conn.id}>
-                    <td className="px-6 py-4 text-sm font-mono">
-                      {conn.farmer_identifier}
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        {conn.provider === 'john_deere'
-                          ? 'John Deere'
-                          : conn.provider}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {new Date(conn.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      {isExpired ? (
-                        <span className="text-amber-600">Token expired</span>
-                      ) : (
-                        <span className="text-green-600">Active</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <DisconnectButton
-                        connectionId={conn.id}
-                        farmerId={conn.farmer_identifier}
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="bg-white rounded-xl shadow-sm border p-8 text-center">
-          <div className="text-gray-500 mb-4">No farmer connections yet</div>
-          <p className="text-sm text-gray-400 mb-4">
-            Connect a farmer&apos;s account to start accessing their data
-          </p>
-          <ConnectJohnDeereButton />
-        </div>
-      )}
+      <Card>
+        <CardHeader>
+          <CardTitle>Connected Farmers</CardTitle>
+          <CardDescription>
+            These farmers have authorized access to their John Deere data.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {connections && connections.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Farmer ID</TableHead>
+                  <TableHead>Provider</TableHead>
+                  <TableHead>Connected</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {connections.map((conn) => {
+                  const isExpired =
+                    conn.token_expires_at &&
+                    new Date(conn.token_expires_at) < new Date();
+                  return (
+                    <TableRow key={conn.id}>
+                      <TableCell className="font-mono">
+                        {conn.farmer_identifier}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="secondary"
+                          className="bg-green-100 text-green-800"
+                        >
+                          {conn.provider === 'john_deere'
+                            ? 'John Deere'
+                            : conn.provider}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {new Date(conn.created_at).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        {isExpired ? (
+                          <Badge
+                            variant="outline"
+                            className="text-amber-600 border-amber-300"
+                          >
+                            Token expired
+                          </Badge>
+                        ) : (
+                          <Badge
+                            variant="outline"
+                            className="text-green-600 border-green-300"
+                          >
+                            Active
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DisconnectButton
+                          connectionId={conn.id}
+                          farmerId={conn.farmer_identifier}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+                <LinkIcon className="size-6 text-muted-foreground" />
+              </div>
+              <h3 className="mt-4 text-lg font-semibold">
+                No farmer connections yet
+              </h3>
+              <p className="mb-4 mt-2 text-sm text-muted-foreground">
+                Connect a farmer&apos;s account to start accessing their data
+              </p>
+              <ConnectJohnDeereButton />
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-      <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="font-semibold text-blue-800 mb-2">
+      <Alert className="bg-blue-50 border-blue-200">
+        <LinkIcon className="size-4 text-blue-600" />
+        <AlertTitle className="text-blue-800">
           Programmatic Connections
-        </h3>
-        <p className="text-sm text-blue-700 mb-2">
-          You can also connect farmers programmatically by redirecting them to:
-        </p>
-        <pre className="bg-blue-100 p-3 rounded text-xs overflow-x-auto text-blue-800">
-          GET /api/oauth/john-deere/authorize?farmer_id=YOUR_FARMER_ID
-        </pre>
-        <p className="text-sm text-blue-700 mt-2">
-          The farmer will authorize access to their John Deere account and be
-          redirected back to your application.
-        </p>
-      </div>
+        </AlertTitle>
+        <AlertDescription className="text-blue-700">
+          <p className="mb-2">
+            You can also connect farmers programmatically by redirecting them
+            to:
+          </p>
+          <code className="block rounded bg-blue-100 px-3 py-2 text-sm">
+            GET /api/oauth/john-deere/authorize?farmer_id=YOUR_FARMER_ID
+          </code>
+          <p className="mt-2">
+            The farmer will authorize access to their John Deere account and be
+            redirected back to your application.
+          </p>
+        </AlertDescription>
+      </Alert>
     </div>
   );
 }

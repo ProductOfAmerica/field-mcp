@@ -1,5 +1,18 @@
 'use client';
 
+import { Alert, AlertDescription } from '@agrimcp/ui/components/alert';
+import { Button } from '@agrimcp/ui/components/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@agrimcp/ui/components/card';
+import { Input } from '@agrimcp/ui/components/input';
+import { Label } from '@agrimcp/ui/components/label';
+import { TractorIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -33,76 +46,64 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <Link href="/" className="text-2xl font-bold text-green-700">
-            AgriMCP
-          </Link>
-          <h1 className="text-2xl font-bold mt-6">Welcome back</h1>
-          <p className="text-gray-600 mt-2">Sign in to your account</p>
+    <main className="flex min-h-screen flex-col items-center justify-center bg-muted/40 p-4">
+      <Link
+        href="/"
+        className="mb-8 flex items-center gap-2 text-2xl font-bold text-green-700"
+      >
+        <div className="flex size-10 items-center justify-center rounded-lg bg-green-600 text-white">
+          <TractorIcon className="size-6" />
         </div>
+        AgriMCP
+      </Link>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white p-8 rounded-xl shadow-sm border"
-        >
-          {error && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
-              {error}
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Welcome back</CardTitle>
+          <CardDescription>Sign in to your account</CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+              />
             </div>
-          )}
-
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            />
-          </div>
-
-          <div className="mb-6">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50"
-          >
-            {loading ? 'Signing in...' : 'Sign in'}
-          </button>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+          </CardContent>
+          <CardFooter className="flex flex-col gap-4">
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? 'Signing in...' : 'Sign in'}
+            </Button>
+            <p className="text-center text-sm text-muted-foreground">
+              Don&apos;t have an account?{' '}
+              <Link href="/signup" className="text-green-600 hover:underline">
+                Sign up
+              </Link>
+            </p>
+          </CardFooter>
         </form>
-
-        <p className="text-center mt-4 text-gray-600">
-          Don&apos;t have an account?{' '}
-          <Link href="/signup" className="text-green-600 hover:underline">
-            Sign up
-          </Link>
-        </p>
-      </div>
+      </Card>
     </main>
   );
 }
