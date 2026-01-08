@@ -304,7 +304,12 @@ describe('John Deere MCP', () => {
 
       const response = await mcpCall('list_users', { organizationId: orgId });
 
-      expect(response.content || response.error).toBeDefined();
+      if (response.error) {
+        console.warn('list_users not available in sandbox, skipping');
+        return;
+      }
+
+      expect(response.content).toBeDefined();
     });
 
     it('requires organizationId parameter', async () => {

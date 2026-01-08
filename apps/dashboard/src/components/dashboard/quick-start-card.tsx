@@ -68,7 +68,7 @@ export function QuickStartCard() {
         <div className="rounded-lg border bg-muted/30 p-4">
           <p className="text-sm font-medium mb-2">MCP Endpoint</p>
           <code className="block rounded bg-background px-3 py-2 text-sm">
-            POST https://mcp.agrimcp.com/v1/john-deere
+            POST {process.env.NEXT_PUBLIC_GATEWAY_URL}/v1/john-deere
           </code>
         </div>
       </CardContent>

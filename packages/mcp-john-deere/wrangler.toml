@@ -1,12 +1,10 @@
 name = "agrimcp-john-deere"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
-workers_dev = false
 
 [vars]
 ENVIRONMENT = "development"
 JOHN_DEERE_API_BASE = "https://sandboxapi.deere.com/platform"
-GATEWAY_SECRET = "dev_gateway_secret_do_not_use_in_prod"
 
 [[kv_namespaces]]
 binding = "TOKEN_CACHE"

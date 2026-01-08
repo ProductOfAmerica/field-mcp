@@ -21,28 +21,28 @@ import {
 } from './lib/utils.js';
 
 function checkSecretsMatch() {
-  const gatewayWrangler = join(GATEWAY_DIR, 'wrangler.toml');
-  const johnDeereWrangler = join(JOHN_DEERE_DIR, 'wrangler.toml');
+  const gatewayDevVars = join(GATEWAY_DIR, '.dev.vars');
+  const johnDeereDevVars = join(JOHN_DEERE_DIR, '.dev.vars');
 
-  if (!existsSync(gatewayWrangler) || !existsSync(johnDeereWrangler)) {
+  if (!existsSync(gatewayDevVars) || !existsSync(johnDeereDevVars)) {
     return;
   }
 
-  const gatewayContent = readFileSync(gatewayWrangler, 'utf-8');
-  const johnDeereContent = readFileSync(johnDeereWrangler, 'utf-8');
+  const gatewayContent = readFileSync(gatewayDevVars, 'utf-8');
+  const johnDeereContent = readFileSync(johnDeereDevVars, 'utf-8');
 
   const gatewaySecretMatch = gatewayContent.match(
-    /GATEWAY_SECRET\s*=\s*"([^"]+)"/,
+    /GATEWAY_SECRET=(.+)/,
   );
   const johnDeereSecretMatch = johnDeereContent.match(
-    /GATEWAY_SECRET\s*=\s*"([^"]+)"/,
+    /GATEWAY_SECRET=(.+)/,
   );
 
   if (gatewaySecretMatch && johnDeereSecretMatch) {
-    if (gatewaySecretMatch[1] !== johnDeereSecretMatch[1]) {
+    if (gatewaySecretMatch[1].trim() !== johnDeereSecretMatch[1].trim()) {
       log('ERROR', colors.red, 'GATEWAY_SECRET MISMATCH!');
-      log('ERROR', colors.red, `  mcp-gateway: ${gatewaySecretMatch[1]}`);
-      log('ERROR', colors.red, `  mcp-john-deere: ${johnDeereSecretMatch[1]}`);
+      log('ERROR', colors.red, `  mcp-gateway: ${gatewaySecretMatch[1].trim()}`);
+      log('ERROR', colors.red, `  mcp-john-deere: ${johnDeereSecretMatch[1].trim()}`);
       log(
         'ERROR',
         colors.red,
@@ -58,19 +58,19 @@ function checkSecretsMatch() {
 
   const envContent = readFileSync(ENV_FILE, 'utf-8');
   const internalSecretMatch = gatewayContent.match(
-    /INTERNAL_SECRET\s*=\s*"([^"]+)"/,
+    /INTERNAL_SECRET=(.+)/,
   );
   const envMatch = envContent.match(/GATEWAY_INTERNAL_SECRET=(.+)/);
 
   if (internalSecretMatch && envMatch) {
-    const wranglerSecret = internalSecretMatch[1];
+    const devVarsSecret = internalSecretMatch[1].trim();
     const envSecret = envMatch[1].trim();
-    if (wranglerSecret !== envSecret) {
+    if (devVarsSecret !== envSecret) {
       log('ERROR', colors.red, 'INTERNAL_SECRET MISMATCH!');
       log(
         'ERROR',
         colors.red,
-        `  mcp-gateway wrangler.toml: ${wranglerSecret}`,
+        `  mcp-gateway .dev.vars: ${devVarsSecret}`,
       );
       log('ERROR', colors.red, `  dashboard .env.local: ${envSecret}`);
       log(

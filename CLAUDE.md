@@ -2,6 +2,10 @@
 
 MCP infrastructure platform for agricultural APIs. Developers integrate once, access John Deere (and later Climate FieldView, CNHi) through unified MCP servers.
 
+## EXTREMELY IMPORTANT!!!!
+YOU ARE DEVELOPING ON A WINDOWS 11 MACHINE.
+MOST LINUX COMMANDS WILL NOT WORK!!! ADJUST ACCORDINGLY!!!
+
 ## Quick Commands
 
 ```bash
@@ -127,7 +131,7 @@ export async function toolHandler(input, client) {
 - `JOHN_DEERE_REDIRECT_URI`
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SECRET`
-- `GATEWAY_INTERNAL_URL` (gateway URL for cache invalidation)
+- `NEXT_PUBLIC_GATEWAY_URL` (gateway URL for cache invalidation)
 - `GATEWAY_INTERNAL_SECRET` (must match gateway's INTERNAL_SECRET)
 
 ## API Reference

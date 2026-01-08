@@ -8,7 +8,7 @@ async function invalidateGatewayCache(developerId: string): Promise<void> {
   if (!config.gateway.internalSecret) return;
 
   try {
-    await fetch(`${config.gateway.internalUrl}/internal/invalidate-cache`, {
+    await fetch(`${config.gateway.url}/internal/invalidate-cache`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
