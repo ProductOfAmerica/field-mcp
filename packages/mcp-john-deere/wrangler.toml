@@ -2,10 +2,15 @@ name = "agrimcp-john-deere"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
-[vars]
-ENVIRONMENT = "development"
-JOHN_DEERE_API_BASE = "https://sandboxapi.deere.com/platform"
-
 [[kv_namespaces]]
 binding = "TOKEN_CACHE"
 id = "30cb59577c0f475f84db05f549789ef9"
+
+# Production (default for `wrangler deploy`)
+[vars]
+ENVIRONMENT = "production"
+JOHN_DEERE_API_BASE = "https://api.deere.com/platform"
+
+# Local development
+[env.dev]
+vars = { ENVIRONMENT = "development", JOHN_DEERE_API_BASE = "https://sandboxapi.deere.com/platform" }

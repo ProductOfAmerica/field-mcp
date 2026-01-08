@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev --persist-to=false",
+    "dev": "wrangler dev --env dev --persist-to=false",
     "deploy": "wrangler deploy",
     "check": "tsc --noEmit",
     "lint": "biome check src/"
