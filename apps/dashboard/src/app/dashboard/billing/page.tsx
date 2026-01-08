@@ -10,7 +10,7 @@ import {
 import { CheckIcon, SparklesIcon } from 'lucide-react';
 import { Suspense } from 'react';
 import { BillingSkeleton } from '@/components/skeletons';
-import { getSubscription, getUsageStats } from '@/lib/data';
+import { getSubscription, getUsageCount } from '@/lib/data';
 import { createClient } from '@/lib/supabase/server';
 import { RealtimePlanCard } from './realtime-plan-card';
 import { UpgradeButton } from './upgrade-button';
@@ -45,15 +45,15 @@ const plans = [
 ];
 
 async function CurrentPlanCard({ userId }: { userId: string }) {
-  const [subscription, usageStats] = await Promise.all([
+  const [subscription, usageCount] = await Promise.all([
     getSubscription(userId),
-    getUsageStats(userId),
+    getUsageCount(userId),
   ]);
 
   return (
     <RealtimePlanCard
       serverSubscription={subscription}
-      serverUsageCount={usageStats.length}
+      serverUsageCount={usageCount}
       userId={userId}
     />
   );

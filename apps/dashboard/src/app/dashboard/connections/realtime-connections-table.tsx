@@ -16,7 +16,10 @@ import {
   TableHeader,
   TableRow,
 } from '@agrimcp/ui/components/table';
-import type { RealtimeChannel } from '@supabase/supabase-js';
+import type {
+  RealtimeChannel,
+  RealtimePostgresChangesPayload,
+} from '@supabase/supabase-js';
 import { LinkIcon } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -78,6 +81,9 @@ export function RealtimeConnectionsTable({
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     async function setupRealtime() {
+      if (channelRef.current?.state === 'joined') {
+        return;
+      }
       if (!isMounted) return;
       const {
         data: { session },
@@ -88,7 +94,7 @@ export function RealtimeConnectionsTable({
       if (!isMounted) return;
 
       channelRef.current = supabase
-        .channel(`connections-changes-${userId}-${Date.now()}`)
+        .channel(`connections-changes-${userId}`)
         .on(
           'postgres_changes',
           {
@@ -97,14 +103,14 @@ export function RealtimeConnectionsTable({
             table: 'farmer_connections',
             filter: `developer_id=eq.${userId}`,
           },
-          (payload) => {
+          (payload: RealtimePostgresChangesPayload<Connection>) => {
             if (payload.eventType === 'INSERT') {
-              const newConn = payload.new as Connection;
+              const newConn = payload.new;
               if (newConn.is_active) {
                 setConnections((current) => [newConn, ...current]);
               }
             } else if (payload.eventType === 'UPDATE') {
-              const updatedConn = payload.new as Connection;
+              const updatedConn = payload.new;
               if (!updatedConn.is_active) {
                 setConnections((current) =>
                   current.filter((c) => c.id !== updatedConn.id),
@@ -130,6 +136,7 @@ export function RealtimeConnectionsTable({
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
       }
     };
   }, [supabase, userId]);

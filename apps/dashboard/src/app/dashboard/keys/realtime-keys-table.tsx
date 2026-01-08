@@ -16,7 +16,10 @@ import {
   TableHeader,
   TableRow,
 } from '@agrimcp/ui/components/table';
-import type { RealtimeChannel } from '@supabase/supabase-js';
+import type {
+  RealtimeChannel,
+  RealtimePostgresChangesPayload,
+} from '@supabase/supabase-js';
 import { KeyIcon } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -77,6 +80,9 @@ export function RealtimeKeysTable({
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     async function setupRealtime() {
+      if (channelRef.current?.state === 'joined') {
+        return;
+      }
       if (!isMounted) return;
       const {
         data: { session },
@@ -87,7 +93,7 @@ export function RealtimeKeysTable({
       if (!isMounted) return;
 
       channelRef.current = supabase
-        .channel(`api-keys-changes-${userId}-${Date.now()}`)
+        .channel(`api-keys-changes-${userId}`)
         .on(
           'postgres_changes',
           {
@@ -96,14 +102,14 @@ export function RealtimeKeysTable({
             table: 'api_keys',
             filter: `developer_id=eq.${userId}`,
           },
-          (payload) => {
+          (payload: RealtimePostgresChangesPayload<ApiKey>) => {
             if (payload.eventType === 'INSERT') {
-              const newKey = payload.new as ApiKey;
+              const newKey = payload.new;
               if (newKey.is_active) {
                 setKeys((current) => [newKey, ...current]);
               }
             } else if (payload.eventType === 'UPDATE') {
-              const updatedKey = payload.new as ApiKey;
+              const updatedKey = payload.new;
               if (!updatedKey.is_active) {
                 setKeys((current) =>
                   current.filter((k) => k.id !== updatedKey.id),
@@ -127,6 +133,7 @@ export function RealtimeKeysTable({
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
       }
     };
   }, [supabase, userId]);

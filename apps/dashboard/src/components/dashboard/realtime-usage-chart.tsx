@@ -23,38 +23,39 @@ import {
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { BarChart3Icon } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import type { DailyUsage } from '@/lib/data/get-usage-stats';
 import { createClient } from '@/lib/supabase/client';
 
 const chartConfig = {
   requests: {
-    label: 'Requests',
+    label: 'Requests:',
     color: 'var(--chart-1)',
   },
 } satisfies ChartConfig;
 
-interface UsageLog {
-  id: string;
-  request_timestamp: string;
+interface ChartDataPoint {
+  date: string;
+  requests: number;
 }
 
 interface RealtimeUsageChartProps {
-  serverUsageLogs: UsageLog[];
+  serverUsageLogs: DailyUsage[];
   userId: string;
 }
 
-function buildChartData(logs: UsageLog[]) {
-  const chartData = [];
+function buildChartData(dailyUsage: DailyUsage[]): ChartDataPoint[] {
+  const usageMap = new Map(dailyUsage.map((d) => [d.date, d.count]));
+
+  const chartData: ChartDataPoint[] = [];
   for (let i = 6; i >= 0; i--) {
     const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
     const dateStr = date.toISOString().split('T')[0];
-    const dayRequests = logs.filter((log) => {
-      const logDate = new Date(log.request_timestamp)
-        .toISOString()
-        .split('T')[0];
-      return logDate === dateStr;
-    }).length;
-    chartData.push({ date: dateStr, requests: dayRequests });
+    chartData.push({
+      date: dateStr,
+      requests: usageMap.get(dateStr) ?? 0,
+    });
   }
   return chartData;
 }
@@ -63,22 +64,17 @@ export function RealtimeUsageChart({
   serverUsageLogs,
   userId,
 }: RealtimeUsageChartProps) {
-  const [logs, setLogs] = useState(serverUsageLogs);
   const [chartData, setChartData] = useState(() =>
     buildChartData(serverUsageLogs),
   );
   const supabase = useMemo(() => createClient(), []);
-  const pendingLogs = useRef<UsageLog[]>([]);
+  const pendingCount = useRef(0);
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
-    setLogs(serverUsageLogs);
+    setChartData(buildChartData(serverUsageLogs));
   }, [serverUsageLogs]);
-
-  useEffect(() => {
-    setChartData(buildChartData(logs));
-  }, [logs]);
 
   useEffect(() => {
     let isMounted = true;
@@ -89,15 +85,15 @@ export function RealtimeUsageChart({
         clearTimeout(debounceTimer.current);
         debounceTimer.current = null;
       }
-      pendingLogs.current = [];
+      pendingCount.current = 0;
 
-      const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      const { data } = await supabase
-        .from('usage_logs')
-        .select('id, request_timestamp')
-        .eq('developer_id', userId)
-        .gte('request_timestamp', since.toISOString());
-      if (data && isMounted) setLogs(data);
+      const { data } = await supabase.rpc('get_daily_usage', {
+        p_developer_id: userId,
+        p_days: 7,
+      });
+      if (data && isMounted) {
+        setChartData(buildChartData(data as DailyUsage[]));
+      }
     }
 
     function handleFocus() {
@@ -114,6 +110,9 @@ export function RealtimeUsageChart({
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     async function setupRealtime() {
+      if (channelRef.current?.state === 'joined') {
+        return;
+      }
       if (!isMounted) return;
       const {
         data: { session },
@@ -124,7 +123,7 @@ export function RealtimeUsageChart({
       if (!isMounted) return;
 
       channelRef.current = supabase
-        .channel(`usage-chart-${userId}-${Date.now()}`)
+        .channel(`usage-chart-${userId}`)
         .on(
           'postgres_changes',
           {
@@ -133,17 +132,25 @@ export function RealtimeUsageChart({
             table: 'usage_logs',
             filter: `developer_id=eq.${userId}`,
           },
-          (payload) => {
-            const newLog = payload.new as UsageLog;
-            pendingLogs.current.push(newLog);
+          () => {
+            pendingCount.current += 1;
 
             if (debounceTimer.current) {
               clearTimeout(debounceTimer.current);
             }
             debounceTimer.current = setTimeout(() => {
-              const newLogs = [...pendingLogs.current];
-              pendingLogs.current = [];
-              setLogs((prev) => [...prev, ...newLogs]);
+              const increment = pendingCount.current;
+              pendingCount.current = 0;
+              const today = new Date().toISOString().split('T')[0];
+              flushSync(() => {
+                setChartData((prev) =>
+                  prev.map((d) =>
+                    d.date === today
+                      ? { ...d, requests: d.requests + increment }
+                      : d,
+                  ),
+                );
+              });
             }, 1000);
           },
         )
@@ -158,6 +165,7 @@ export function RealtimeUsageChart({
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
       }
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current);
@@ -188,7 +196,7 @@ export function RealtimeUsageChart({
               <YAxis tickLine={false} axisLine={false} tickMargin={8} />
               <ChartTooltip
                 cursor={false}
-                content={<ChartTooltipContent hideLabel />}
+                content={<ChartTooltipContent hideLabel hideIndicator />}
               />
               <Bar dataKey="requests" fill="var(--color-requests)" radius={4} />
             </BarChart>

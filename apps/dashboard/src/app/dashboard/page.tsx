@@ -1,7 +1,7 @@
 import { QuickStartCard } from '@/components/dashboard/quick-start-card';
 import { RealtimeStats } from '@/components/dashboard/realtime-stats';
 import { RealtimeUsageChart } from '@/components/dashboard/realtime-usage-chart';
-import { getSubscription, getUsageStats } from '@/lib/data';
+import { getSubscription, getUsageCount, getUsageStats } from '@/lib/data';
 import { createClient } from '@/lib/supabase/server';
 
 export default async function DashboardPage() {
@@ -10,8 +10,9 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [subscription, usageStats] = await Promise.all([
+  const [subscription, usageCount, usageStats] = await Promise.all([
     getSubscription(user!.id),
+    getUsageCount(user!.id),
     getUsageStats(user!.id),
   ]);
 
@@ -26,7 +27,7 @@ export default async function DashboardPage() {
 
       <RealtimeStats
         serverSubscription={subscription}
-        serverUsageCount={usageStats.length}
+        serverUsageCount={usageCount}
         userId={user!.id}
       />
 

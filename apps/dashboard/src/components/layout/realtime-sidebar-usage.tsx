@@ -1,9 +1,21 @@
 'use client';
 
 import { Progress } from '@agrimcp/ui/components/progress';
-import type { RealtimeChannel } from '@supabase/supabase-js';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSidebar } from '@agrimcp/ui/components/sidebar';
+import type {
+  RealtimeChannel,
+  RealtimePostgresChangesPayload,
+} from '@supabase/supabase-js';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { createClient } from '@/lib/supabase/client';
+
+function getMonthStart() {
+  const now = new Date();
+  return new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0),
+  );
+}
 
 interface RealtimeSidebarUsageProps {
   serverUsageCount: number;
@@ -22,164 +34,136 @@ export function RealtimeSidebarUsage({
   const [limit, setLimit] = useState(serverLimit);
   const [plan, setPlan] = useState(serverPlan);
   const supabase = useMemo(() => createClient(), []);
-  const pendingCount = useRef(0);
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
-  const channelsRef = useRef<RealtimeChannel[]>([]);
+  const subscriptionChannelRef = useRef<RealtimeChannel | null>(null);
+  const usageChannelRef = useRef<RealtimeChannel | null>(null);
+  const { openMobile, isMobile } = useSidebar();
+
+  const fetchUsageCount = useCallback(async () => {
+    const { count } = await supabase
+      .from('usage_logs')
+      .select('*', { count: 'exact', head: true })
+      .eq('developer_id', userId)
+      .gte('request_timestamp', getMonthStart().toISOString());
+    if (count !== null) {
+      flushSync(() => {
+        setUsageCount(count);
+      });
+    }
+  }, [supabase, userId]);
+
+  const fetchSubscription = useCallback(async () => {
+    const { data: sub } = await supabase
+      .from('subscriptions')
+      .select('tier, monthly_request_limit')
+      .eq('developer_id', userId)
+      .single();
+    if (sub) {
+      setPlan(sub.tier);
+      setLimit(sub.monthly_request_limit);
+    }
+  }, [supabase, userId]);
 
   useEffect(() => {
-    setUsageCount(serverUsageCount);
-  }, [serverUsageCount]);
-
-  useEffect(() => {
-    setLimit(serverLimit);
-  }, [serverLimit]);
-
-  useEffect(() => {
-    setPlan(serverPlan);
-  }, [serverPlan]);
+    if (openMobile || !isMobile) {
+      fetchUsageCount();
+    }
+  }, [isMobile, openMobile, fetchUsageCount]);
 
   useEffect(() => {
     let isMounted = true;
 
-    async function fetchCurrentData() {
-      if (!isMounted) return;
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
-        debounceTimer.current = null;
-      }
-      pendingCount.current = 0;
-
-      const { data: sub } = await supabase
-        .from('subscriptions')
-        .select('tier, monthly_request_limit')
-        .eq('developer_id', userId)
-        .single();
-      if (sub && isMounted) {
-        setPlan(sub.tier);
-        setLimit(sub.monthly_request_limit);
-      }
-
-      const now = new Date();
-      const monthStart = new Date(
-        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0),
-      );
-      const { count } = await supabase
-        .from('usage_logs')
-        .select('*', { count: 'exact', head: true })
-        .eq('developer_id', userId)
-        .gte('request_timestamp', monthStart.toISOString());
-      if (count !== null && isMounted) {
-        setUsageCount(count);
-      }
-    }
-
-    function handleFocus() {
-      fetchCurrentData();
-    }
-
-    function handleVisibilityChange() {
+    function handleVisibility() {
       if (document.visibilityState === 'visible') {
-        fetchCurrentData();
+        fetchSubscription();
+        fetchUsageCount();
       }
     }
 
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibility);
+    document.addEventListener('visibilitychange', handleVisibility);
 
     async function setupRealtime() {
-      if (!isMounted) return;
+      if (
+        subscriptionChannelRef.current?.state === 'joined' &&
+        usageChannelRef.current?.state === 'joined'
+      ) {
+        return;
+      }
+
       const {
         data: { session },
       } = await supabase.auth.getSession();
+      if (!isMounted) return;
       if (!session?.access_token) return;
 
       await supabase.realtime.setAuth(session.access_token);
       if (!isMounted) return;
 
-      const subscriptionChannel = supabase
-        .channel(`sidebar-subscription-${userId}-${Date.now()}`)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'subscriptions',
-            filter: `developer_id=eq.${userId}`,
-          },
-          (payload) => {
-            if (
-              payload.eventType === 'UPDATE' ||
-              payload.eventType === 'INSERT'
-            ) {
-              const sub = payload.new as {
-                tier: string;
-                monthly_request_limit: number;
-              };
-              setPlan(sub.tier);
-              setLimit(sub.monthly_request_limit);
-            }
-          },
-        )
-        .subscribe();
+      const subChannel = supabase.channel(`sidebar-subscription-${userId}`).on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'subscriptions',
+          filter: `developer_id=eq.${userId}`,
+        },
+        (
+          payload: RealtimePostgresChangesPayload<{
+            tier: string;
+            monthly_request_limit: number;
+          }>,
+        ) => {
+          if (
+            payload.eventType === 'UPDATE' ||
+            payload.eventType === 'INSERT'
+          ) {
+            setPlan(payload.new.tier);
+            setLimit(payload.new.monthly_request_limit);
+          }
+        },
+      );
+      subscriptionChannelRef.current = subChannel;
+      subChannel.subscribe();
 
-      const usageChannel = supabase
-        .channel(`sidebar-usage-${userId}-${Date.now()}`)
-        .on(
-          'postgres_changes',
-          {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'usage_logs',
-            filter: `developer_id=eq.${userId}`,
-          },
-          async () => {
-            pendingCount.current++;
-            if (debounceTimer.current) {
-              clearTimeout(debounceTimer.current);
-            }
-            debounceTimer.current = setTimeout(async () => {
-              pendingCount.current = 0;
-              const now = new Date();
-              const monthStart = new Date(
-                Date.UTC(
-                  now.getUTCFullYear(),
-                  now.getUTCMonth(),
-                  1,
-                  0,
-                  0,
-                  0,
-                  0,
-                ),
-              );
-              const { count } = await supabase
-                .from('usage_logs')
-                .select('*', { count: 'exact', head: true })
-                .eq('developer_id', userId)
-                .gte('request_timestamp', monthStart.toISOString());
-              if (count !== null) setUsageCount(count);
-            }, 1000);
-          },
-        )
-        .subscribe();
-
-      channelsRef.current = [subscriptionChannel, usageChannel];
+      const useChannel = supabase.channel(`sidebar-usage-${userId}`).on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'usage_logs',
+          filter: `developer_id=eq.${userId}`,
+        },
+        () => {
+          if (debounceTimer.current) {
+            clearTimeout(debounceTimer.current);
+          }
+          debounceTimer.current = setTimeout(fetchUsageCount, 1000);
+        },
+      );
+      usageChannelRef.current = useChannel;
+      useChannel.subscribe();
     }
 
     setupRealtime();
 
     return () => {
       isMounted = false;
-      window.removeEventListener('focus', handleFocus);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      for (const channel of channelsRef.current) {
-        supabase.removeChannel(channel);
+      window.removeEventListener('focus', handleVisibility);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      if (subscriptionChannelRef.current) {
+        supabase.removeChannel(subscriptionChannelRef.current);
+        subscriptionChannelRef.current = null;
       }
-      channelsRef.current = [];
+      if (usageChannelRef.current) {
+        supabase.removeChannel(usageChannelRef.current);
+        usageChannelRef.current = null;
+      }
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current);
       }
     };
-  }, [supabase, userId]);
+  }, [supabase, userId, fetchUsageCount, fetchSubscription]);
 
   const usagePercentage = (usageCount / limit) * 100;
 

@@ -1,4 +1,4 @@
-import { getDeveloper, getUsageStats } from '@/lib/data';
+import { getDeveloper, getUsageCount } from '@/lib/data';
 import { AppSidebar } from './app-sidebar';
 
 interface SidebarWrapperProps {
@@ -6,14 +6,14 @@ interface SidebarWrapperProps {
 }
 
 export async function SidebarWrapper({ userId }: SidebarWrapperProps) {
-  const [developer, usageStats] = await Promise.all([
+  const [developer, usageCount] = await Promise.all([
     getDeveloper(userId),
-    getUsageStats(userId),
+    getUsageCount(userId),
   ]);
 
   const subscription = developer?.subscriptions?.[0];
   const usage = {
-    used: usageStats.length,
+    used: usageCount,
     limit: subscription?.monthly_request_limit ?? 1000,
   };
 
