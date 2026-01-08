@@ -1,0 +1,17 @@
+name: Deploy MCP John Deere
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'packages/mcp-john-deere/**'
+      - 'packages/types/**'
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy-worker.yml
+    with:
+      working-directory: packages/mcp-john-deere
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
