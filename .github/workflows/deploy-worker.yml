@@ -36,17 +36,6 @@ jobs:
       - name: Type check
         run: pnpm --filter "./${{ inputs.working-directory }}" check
 
-      - name: Check secret exists
-        run: |
-          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
-            echo "ERROR: CLOUDFLARE_API_TOKEN secret is empty or not set"
-            exit 1
-          else
-            echo "Secret is set (length: ${#CLOUDFLARE_API_TOKEN})"
-          fi
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-
       - name: Deploy
         working-directory: ${{ inputs.working-directory }}
         run: npx wrangler deploy
