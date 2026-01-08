@@ -2,17 +2,6 @@ name = "agrimcp-gateway"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
-[vars]
-ENVIRONMENT = "development"
-
-[[kv_namespaces]]
-binding = "RATE_LIMITS"
-id = "local_rate_limits"
-
-[[kv_namespaces]]
-binding = "API_KEY_CACHE"
-id = "local_api_key_cache"
-
 [[services]]
 binding = "JOHN_DEERE_MCP"
 service = "agrimcp-john-deere"
@@ -24,3 +13,27 @@ class_name = "MonthlyUsageCounter"
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["MonthlyUsageCounter"]
+
+# Local development
+[env.dev]
+vars = { ENVIRONMENT = "development" }
+
+[[env.dev.kv_namespaces]]
+binding = "RATE_LIMITS"
+id = "local_rate_limits"
+
+[[env.dev.kv_namespaces]]
+binding = "API_KEY_CACHE"
+id = "local_api_key_cache"
+
+# Production (default for `wrangler deploy`)
+[vars]
+ENVIRONMENT = "production"
+
+[[kv_namespaces]]
+binding = "RATE_LIMITS"
+id = "09f6e46b18bf4bec87b4dbb308e613d9"
+
+[[kv_namespaces]]
+binding = "API_KEY_CACHE"
+id = "d2b9c7a7951f4138b852946ad284310f"
