@@ -13,5 +13,4 @@ jobs:
     uses: ./.github/workflows/deploy-worker.yml
     with:
       working-directory: packages/mcp-gateway
-    secrets:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    secrets: inherit
