@@ -22,7 +22,9 @@
         "STRIPE_STARTUP_PRICE_ID",
         "JOHN_DEERE_CLIENT_ID",
         "JOHN_DEERE_CLIENT_SECRET",
-        "JOHN_DEERE_REDIRECT_URI"
+        "JOHN_DEERE_REDIRECT_URI",
+        "GATEWAY_INTERNAL_URL",
+        "GATEWAY_INTERNAL_SECRET"
       ]
     },
     "check": {
