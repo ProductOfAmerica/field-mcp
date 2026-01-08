@@ -25,7 +25,7 @@ describe('MCP Gateway', () => {
     it('rejects invalid API key', async () => {
       const response = await rawRequest('/v1/mcp', {
         headers: {
-          Authorization: 'Bearer agri_live_invalid_key_here_12345678',
+          Authorization: 'Bearer field_live_invalid_key_here_12345678',
           'X-Farmer-ID': TEST_CONFIG.FARMER_ID,
         },
         body: { jsonrpc: '2.0', id: 1, method: 'tools/list' },

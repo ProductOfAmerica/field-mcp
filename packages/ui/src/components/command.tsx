@@ -6,8 +6,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@agrimcp/ui/components/dialog';
-import { cn } from '@agrimcp/ui/lib/utils';
+} from '@fieldmcp/ui/components/dialog';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import { Command as CommandPrimitive } from 'cmdk';
 import { SearchIcon } from 'lucide-react';
 import type * as React from 'react';

@@ -11,7 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@agrimcp/ui/components/sidebar';
+} from '@fieldmcp/ui/components/sidebar';
 import {
   CreditCardIcon,
   GaugeIcon,
@@ -69,7 +69,7 @@ export function AppSidebar({ usage, plan, userId }: AppSidebarProps) {
                   <TractorIcon className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">AgriMCP</span>
+                  <span className="truncate font-semibold">FieldMCP</span>
                   <span className="truncate text-xs text-muted-foreground">
                     Developer Platform
                   </span>

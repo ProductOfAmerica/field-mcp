@@ -26,10 +26,10 @@ importers:
 
   apps/dashboard:
     dependencies:
-      '@agrimcp/types':
+      '@fieldmcp/types':
         specifier: workspace:*
         version: link:../../packages/types
-      '@agrimcp/ui':
+      '@fieldmcp/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@stripe/stripe-js':
@@ -93,7 +93,7 @@ importers:
 
   packages/mcp-gateway:
     dependencies:
-      '@agrimcp/types':
+      '@fieldmcp/types':
         specifier: workspace:*
         version: link:../types
       '@supabase/supabase-js':
@@ -112,7 +112,7 @@ importers:
 
   packages/mcp-john-deere:
     dependencies:
-      '@agrimcp/types':
+      '@fieldmcp/types':
         specifier: workspace:*
         version: link:../types
       '@supabase/supabase-js':

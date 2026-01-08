@@ -1,5 +1,5 @@
-import { Separator } from '@agrimcp/ui/components/separator';
-import { cn } from '@agrimcp/ui/lib/utils';
+import { Separator } from '@fieldmcp/ui/components/separator';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 

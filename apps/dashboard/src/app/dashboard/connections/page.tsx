@@ -2,14 +2,14 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-} from '@agrimcp/ui/components/alert';
+} from '@fieldmcp/ui/components/alert';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@agrimcp/ui/components/card';
+} from '@fieldmcp/ui/components/card';
 import { LinkIcon } from 'lucide-react';
 import { Suspense } from 'react';
 import { TableSkeleton } from '@/components/skeletons';

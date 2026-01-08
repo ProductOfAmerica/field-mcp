@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@agrimcp/ui/components/button';
+import { Button } from '@fieldmcp/ui/components/button';
 import { useState } from 'react';
 
 export function UpgradeButton({ tier }: { tier: 'developer' | 'startup' }) {

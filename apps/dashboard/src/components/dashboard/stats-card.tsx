@@ -1,5 +1,5 @@
-import { Card, CardContent } from '@agrimcp/ui/components/card';
-import { cn } from '@agrimcp/ui/lib/utils';
+import { Card, CardContent } from '@fieldmcp/ui/components/card';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import type { LucideIcon } from 'lucide-react';
 
 interface StatsCardProps {

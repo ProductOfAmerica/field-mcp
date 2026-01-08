@@ -1,7 +1,7 @@
 'use client';
 
-import { Label } from '@agrimcp/ui/components/label';
-import { cn } from '@agrimcp/ui/lib/utils';
+import { Label } from '@fieldmcp/ui/components/label';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import type * as LabelPrimitive from '@radix-ui/react-label';
 import { Slot } from '@radix-ui/react-slot';
 import * as React from 'react';

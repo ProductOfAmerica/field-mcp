@@ -1,10 +1,10 @@
 'use client';
 
-import { Alert, AlertDescription } from '@agrimcp/ui/components/alert';
-import { Button } from '@agrimcp/ui/components/button';
-import { Input } from '@agrimcp/ui/components/input';
-import { Label } from '@agrimcp/ui/components/label';
-import { cn } from '@agrimcp/ui/lib/utils';
+import { Alert, AlertDescription } from '@fieldmcp/ui/components/alert';
+import { Button } from '@fieldmcp/ui/components/button';
+import { Input } from '@fieldmcp/ui/components/input';
+import { Label } from '@fieldmcp/ui/components/label';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -124,7 +124,7 @@ export function LoginForm() {
         type="submit"
         disabled={loading || !isFormValid}
       >
-        {loading ? 'Signing in...' : 'Sign in to AgriMCP'}
+        {loading ? 'Signing in...' : 'Sign in to FieldMCP'}
       </Button>
     </form>
   );

@@ -1,24 +1,24 @@
 'use client';
 
-import { Button } from '@agrimcp/ui/components/button';
-import { Input } from '@agrimcp/ui/components/input';
-import { Separator } from '@agrimcp/ui/components/separator';
+import { Button } from '@fieldmcp/ui/components/button';
+import { Input } from '@fieldmcp/ui/components/input';
+import { Separator } from '@fieldmcp/ui/components/separator';
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from '@agrimcp/ui/components/sheet';
-import { Skeleton } from '@agrimcp/ui/components/skeleton';
+} from '@fieldmcp/ui/components/sheet';
+import { Skeleton } from '@fieldmcp/ui/components/skeleton';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@agrimcp/ui/components/tooltip';
-import { useIsMobile } from '@agrimcp/ui/hooks/use-mobile';
-import { cn } from '@agrimcp/ui/lib/utils';
+} from '@fieldmcp/ui/components/tooltip';
+import { useIsMobile } from '@fieldmcp/ui/hooks/use-mobile';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';

@@ -1,4 +1,4 @@
-import { Badge } from '@agrimcp/ui/components/badge';
+import { Badge } from '@fieldmcp/ui/components/badge';
 import {
   Card,
   CardContent,
@@ -6,7 +6,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@agrimcp/ui/components/card';
+} from '@fieldmcp/ui/components/card';
 import { CheckIcon, SparklesIcon } from 'lucide-react';
 import { Suspense } from 'react';
 import { BillingSkeleton } from '@/components/skeletons';

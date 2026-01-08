@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@agrimcp/ui/lib/utils';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 import type * as React from 'react';
 

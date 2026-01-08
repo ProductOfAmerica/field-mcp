@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-green-50 to-white">
       <nav className="flex justify-between items-center p-6 max-w-6xl mx-auto">
-        <div className="text-2xl font-bold text-green-700">AgriMCP</div>
+        <div className="text-2xl font-bold text-green-700">FieldMCP</div>
         <div className="space-x-4">
           <Link href="/login" className="text-gray-600 hover:text-gray-900">
             Log in
@@ -25,7 +25,7 @@ export default function Home() {
           <span className="text-green-600">in minutes, not weeks</span>
         </h1>
         <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-          AgriMCP provides MCP servers for agricultural APIs. Integrate with
+          FieldMCP provides MCP servers for agricultural APIs. Integrate with
           John Deere, Climate FieldView, and more through a unified, LLM-ready
           interface.
         </p>

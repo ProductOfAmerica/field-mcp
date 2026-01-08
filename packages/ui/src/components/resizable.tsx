@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@agrimcp/ui/lib/utils';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import { GripVerticalIcon } from 'lucide-react';
 import type * as React from 'react';
 import { Group, Panel, Separator } from 'react-resizable-panels';

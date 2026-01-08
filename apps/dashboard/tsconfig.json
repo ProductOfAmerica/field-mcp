@@ -20,7 +20,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@agrimcp/ui/*": ["../../packages/ui/src/*"]
+      "@fieldmcp/ui/*": ["../../packages/ui/src/*"]
     }
   },
   "include": [

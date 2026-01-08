@@ -1,5 +1,5 @@
-import { type Button, buttonVariants } from '@agrimcp/ui/components/button';
-import { cn } from '@agrimcp/ui/lib/utils';
+import { type Button, buttonVariants } from '@fieldmcp/ui/components/button';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,

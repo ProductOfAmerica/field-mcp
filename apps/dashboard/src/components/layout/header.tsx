@@ -7,9 +7,9 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@agrimcp/ui/components/breadcrumb';
-import { Separator } from '@agrimcp/ui/components/separator';
-import { SidebarTrigger } from '@agrimcp/ui/components/sidebar';
+} from '@fieldmcp/ui/components/breadcrumb';
+import { Separator } from '@fieldmcp/ui/components/separator';
+import { SidebarTrigger } from '@fieldmcp/ui/components/sidebar';
 import { UserNav } from './user-nav';
 
 interface HeaderProps {

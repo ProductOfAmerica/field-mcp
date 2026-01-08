@@ -1,9 +1,9 @@
 'use client';
 
-import { Label } from '@agrimcp/ui/components/label';
-import { Separator } from '@agrimcp/ui/components/separator';
+import { Label } from '@fieldmcp/ui/components/label';
+import { Separator } from '@fieldmcp/ui/components/separator';
 
-import { cn } from '@agrimcp/ui/lib/utils';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { useMemo } from 'react';
 

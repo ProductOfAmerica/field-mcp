@@ -1,4 +1,4 @@
-import { cn } from '@agrimcp/ui/lib/utils';
+import { cn } from '@fieldmcp/ui/lib/utils';
 
 function Skeleton({ className, ...props }: React.ComponentProps<'div'>) {
   return (

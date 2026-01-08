@@ -1,5 +1,5 @@
 {
-  "name": "agri-mcp",
+  "name": "field-mcp",
   "version": "1.0.0",
   "description": "MCP infrastructure platform for agricultural APIs",
   "private": true,

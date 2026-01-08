@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'AgriMCP - Agricultural API Platform',
+  title: 'FieldMCP - Agricultural API Platform',
   description: 'Connect your AI to farm data in minutes, not weeks.',
 };
 

@@ -1,4 +1,4 @@
-import { Skeleton } from '@agrimcp/ui/components/skeleton';
+import { Skeleton } from '@fieldmcp/ui/components/skeleton';
 import {
   Table,
   TableBody,
@@ -6,7 +6,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@agrimcp/ui/components/table';
+} from '@fieldmcp/ui/components/table';
 
 interface TableSkeletonProps {
   columns: number;

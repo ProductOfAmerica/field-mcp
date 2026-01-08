@@ -1,7 +1,7 @@
 'use client';
 
-import { Button, buttonVariants } from '@agrimcp/ui/components/button';
-import { cn } from '@agrimcp/ui/lib/utils';
+import { Button, buttonVariants } from '@fieldmcp/ui/components/button';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import {
   ChevronDownIcon,
   ChevronLeftIcon,

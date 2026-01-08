@@ -1,4 +1,4 @@
-import type { ApiKeyValidation } from '@agrimcp/types';
+import type { ApiKeyValidation } from '@fieldmcp/types';
 import { createClient } from '@supabase/supabase-js';
 import { API_KEY_CACHE_TTL } from '../lib/constants.js';
 import type { Env } from '../lib/types.js';
@@ -20,7 +20,7 @@ export async function validateApiKey(
   apiKey: string | null,
   env: Env,
 ): Promise<ApiKeyValidation> {
-  if (!apiKey || !apiKey.startsWith('agri_live_') || apiKey.length < 20) {
+  if (!apiKey || !apiKey.startsWith('field_live_') || apiKey.length < 20) {
     await addTimingNoise();
     return { valid: false };
   }

@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@agrimcp/ui/lib/utils';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import * as PopoverPrimitive from '@radix-ui/react-popover';
 import type * as React from 'react';
 

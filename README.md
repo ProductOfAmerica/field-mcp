@@ -1,4 +1,4 @@
-# AgriMCP
+# FieldMCP
 
 MCP infrastructure platform for agricultural APIs. Developers integrate once, access John Deere (and later Climate FieldView, CNHi) through unified MCP servers.
 
@@ -31,8 +31,8 @@ flowchart LR
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/agri-mcp.git
-cd agri-mcp
+git clone https://github.com/ProductOfAmerica/field-mcp/actions
+cd field-mcp
 
 # Install dependencies
 pnpm install
@@ -57,11 +57,11 @@ pnpm check
 ## Project Structure
 
 ```
-agrimcp/
+fieldmcp/
 ├── apps/
 │   └── dashboard/          # Next.js developer dashboard
 ├── packages/
-│   ├── types/              # Shared TypeScript types (@agrimcp/types)
+│   ├── types/              # Shared TypeScript types (@fieldmcp/types)
 │   ├── mcp-gateway/        # API gateway worker - auth, rate limits, routing
 │   ├── mcp-john-deere/     # John Deere MCP server - tools for JD API
 │   └── supabase/           # Migrations and edge functions

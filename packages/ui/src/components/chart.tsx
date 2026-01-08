@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@agrimcp/ui/lib/utils';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import * as React from 'react';
 import * as RechartsPrimitive from 'recharts';
 

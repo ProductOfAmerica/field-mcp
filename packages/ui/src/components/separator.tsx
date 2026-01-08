@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@agrimcp/ui/lib/utils';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import * as SeparatorPrimitive from '@radix-ui/react-separator';
 import type * as React from 'react';
 

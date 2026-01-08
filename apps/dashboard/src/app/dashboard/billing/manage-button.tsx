@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@agrimcp/ui/components/button';
+import { Button } from '@fieldmcp/ui/components/button';
 import { ExternalLinkIcon, LoaderIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 

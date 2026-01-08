@@ -1,6 +1,6 @@
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 const KEY_LENGTH = 32;
-const PREFIX = 'agri_live_';
+const PREFIX = 'field_live_';
 
 export function generateApiKey(): { key: string; prefix: string } {
   const randomBytes = new Uint8Array(KEY_LENGTH);

@@ -1,4 +1,4 @@
-# AgriMCP
+# FieldMCP
 
 MCP infrastructure platform for agricultural APIs. Developers integrate once, access John Deere (and later Climate FieldView, CNHi) through unified MCP servers.
 
@@ -44,11 +44,11 @@ pnpm supabase:reset   # Reset Supabase database
 ## Key Directories
 
 ```
-agrimcp/
+fieldmcp/
 ├── apps/
 │   └── dashboard/          # Next.js developer dashboard
 ├── packages/
-│   ├── types/              # Shared TypeScript types (@agrimcp/types)
+│   ├── types/              # Shared TypeScript types (@fieldmcp/types)
 │   ├── mcp-gateway/        # API gateway worker - auth, rate limits, routing
 │   ├── mcp-john-deere/     # John Deere MCP server - tools for JD API
 │   └── supabase/           # Migrations and edge functions
@@ -66,7 +66,7 @@ agrimcp/
 ## Code Patterns
 
 ### API Keys
-- Format: `agri_live_` + 32 random chars
+- Format: `field_live_` + 32 random chars
 - Storage: SHA-256 hash in DB, never plaintext
 - Validation: Check hash, cache result in KV for 5 min
 
@@ -98,8 +98,8 @@ export async function toolHandler(input, client) {
 3. Run `pnpm check` before committing
 
 ### Before modifying Supabase schema:
-1. Create new migration: `pnpm --filter @agrimcp/supabase db:new migration_name`
-2. Test locally: `pnpm --filter @agrimcp/supabase db:reset`
+1. Create new migration: `pnpm --filter @fieldmcp/supabase db:new migration_name`
+2. Test locally: `pnpm --filter @fieldmcp/supabase db:reset`
 3. NEVER modify existing migrations
 
 ### Before deploying:

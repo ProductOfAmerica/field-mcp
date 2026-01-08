@@ -6,20 +6,20 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@agrimcp/ui/components/card';
+} from '@fieldmcp/ui/components/card';
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@agrimcp/ui/components/chart';
+} from '@fieldmcp/ui/components/chart';
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from '@agrimcp/ui/components/empty';
+} from '@fieldmcp/ui/components/empty';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { BarChart3Icon } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';

@@ -1,5 +1,5 @@
-import { SidebarInset, SidebarProvider } from '@agrimcp/ui/components/sidebar';
-import { Skeleton } from '@agrimcp/ui/components/skeleton';
+import { SidebarInset, SidebarProvider } from '@fieldmcp/ui/components/sidebar';
+import { Skeleton } from '@fieldmcp/ui/components/skeleton';
 import { Suspense } from 'react';
 import { AuthenticatedLayout } from '@/components/layout/authenticated-layout';
 

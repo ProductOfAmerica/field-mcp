@@ -1,11 +1,11 @@
-import { Badge } from '@agrimcp/ui/components/badge';
+import { Badge } from '@fieldmcp/ui/components/badge';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@agrimcp/ui/components/card';
+} from '@fieldmcp/ui/components/card';
 import { CodeIcon, KeyIcon, LinkIcon } from 'lucide-react';
 import Link from 'next/link';
 
@@ -38,7 +38,7 @@ export function QuickStartCard() {
     <Card>
       <CardHeader>
         <CardTitle>Quick Start</CardTitle>
-        <CardDescription>Get started with AgriMCP in 3 steps</CardDescription>
+        <CardDescription>Get started with FieldMCP in 3 steps</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {steps.map((step) => (

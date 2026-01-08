@@ -4,8 +4,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@agrimcp/ui/components/card';
-import { Skeleton } from '@agrimcp/ui/components/skeleton';
+} from '@fieldmcp/ui/components/card';
+import { Skeleton } from '@fieldmcp/ui/components/skeleton';
 
 const heights = [40, 65, 45, 80, 55, 70, 60];
 

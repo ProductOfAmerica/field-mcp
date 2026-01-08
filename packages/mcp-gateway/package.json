@@ -1,5 +1,5 @@
 {
-  "name": "@agrimcp/mcp-gateway",
+  "name": "@fieldmcp/mcp-gateway",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "lint": "biome check src/"
   },
   "dependencies": {
-    "@agrimcp/types": "workspace:*",
+    "@fieldmcp/types": "workspace:*",
     "@supabase/supabase-js": "^2.89.0"
   },
   "devDependencies": {

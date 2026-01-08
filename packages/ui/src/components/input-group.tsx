@@ -1,9 +1,9 @@
 'use client';
 
-import { Button } from '@agrimcp/ui/components/button';
-import { Input } from '@agrimcp/ui/components/input';
-import { Textarea } from '@agrimcp/ui/components/textarea';
-import { cn } from '@agrimcp/ui/lib/utils';
+import { Button } from '@fieldmcp/ui/components/button';
+import { Input } from '@fieldmcp/ui/components/input';
+import { Textarea } from '@fieldmcp/ui/components/textarea';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type * as React from 'react';
 

@@ -1,7 +1,7 @@
 'use client';
 
-import { Progress } from '@agrimcp/ui/components/progress';
-import { useSidebar } from '@agrimcp/ui/components/sidebar';
+import { Progress } from '@fieldmcp/ui/components/progress';
+import { useSidebar } from '@fieldmcp/ui/components/sidebar';
 import type {
   RealtimeChannel,
   RealtimePostgresChangesPayload,

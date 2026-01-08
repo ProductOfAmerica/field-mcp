@@ -10,8 +10,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@agrimcp/ui/components/alert-dialog';
-import { Button } from '@agrimcp/ui/components/button';
+} from '@fieldmcp/ui/components/alert-dialog';
+import { Button } from '@fieldmcp/ui/components/button';
 import { UnlinkIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';

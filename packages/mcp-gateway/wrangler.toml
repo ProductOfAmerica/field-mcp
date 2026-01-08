@@ -1,10 +1,10 @@
-name = "agrimcp-gateway"
+name = "fieldmcp-gateway"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
 [[services]]
 binding = "JOHN_DEERE_MCP"
-service = "agrimcp-john-deere"
+service = "fieldmcp-john-deere"
 
 [[durable_objects.bindings]]
 name = "MONTHLY_COUNTER"

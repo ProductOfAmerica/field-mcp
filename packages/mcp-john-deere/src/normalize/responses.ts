@@ -22,7 +22,7 @@ import type {
   Organization,
   PlantingRecord,
   User,
-} from '@agrimcp/types';
+} from '@fieldmcp/types';
 
 export function normalizeOrganization(jd: JDOrganization): Organization {
   return {

@@ -223,7 +223,7 @@ describe('Security Tests', () => {
       const response = await rawRequest('/v1/mcp', {
         method: 'POST',
         headers: {
-          Authorization: 'Bearer agri_live_',
+          Authorization: 'Bearer field_live_',
           'X-Farmer-ID': TEST_CONFIG.FARMER_ID,
         },
         body: {
@@ -292,7 +292,7 @@ describe('Security Tests', () => {
         await rawRequest('/v1/mcp', {
           method: 'POST',
           headers: {
-            Authorization: 'Bearer agri_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            Authorization: 'Bearer field_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
             'X-Farmer-ID': TEST_CONFIG.FARMER_ID,
           },
           body: { jsonrpc: '2.0', id: 1, method: 'tools/list' },

@@ -1,14 +1,14 @@
 'use client';
 
-import { Badge } from '@agrimcp/ui/components/badge';
+import { Badge } from '@fieldmcp/ui/components/badge';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@agrimcp/ui/components/card';
-import { Progress } from '@agrimcp/ui/components/progress';
+} from '@fieldmcp/ui/components/card';
+import { Progress } from '@fieldmcp/ui/components/progress';
 import type {
   RealtimeChannel,
   RealtimePostgresChangesPayload,

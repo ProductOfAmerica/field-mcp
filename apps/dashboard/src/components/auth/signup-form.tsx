@@ -1,11 +1,11 @@
 'use client';
 
-import { Alert, AlertDescription } from '@agrimcp/ui/components/alert';
-import { Button } from '@agrimcp/ui/components/button';
-import { Checkbox } from '@agrimcp/ui/components/checkbox';
-import { Input } from '@agrimcp/ui/components/input';
-import { Label } from '@agrimcp/ui/components/label';
-import { cn } from '@agrimcp/ui/lib/utils';
+import { Alert, AlertDescription } from '@fieldmcp/ui/components/alert';
+import { Button } from '@fieldmcp/ui/components/button';
+import { Checkbox } from '@fieldmcp/ui/components/checkbox';
+import { Input } from '@fieldmcp/ui/components/input';
+import { Label } from '@fieldmcp/ui/components/label';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -206,7 +206,7 @@ export function SignupForm() {
         type="submit"
         disabled={loading || !isFormValid}
       >
-        {loading ? 'Creating account...' : 'Sign up to AgriMCP'}
+        {loading ? 'Creating account...' : 'Sign up to FieldMCP'}
       </Button>
     </form>
   );

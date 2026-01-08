@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@agrimcp/ui/components/button';
-import { cn } from '@agrimcp/ui/lib/utils';
+import { Button } from '@fieldmcp/ui/components/button';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from 'embla-carousel-react';

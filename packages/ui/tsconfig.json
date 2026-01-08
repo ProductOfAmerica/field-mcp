@@ -17,7 +17,7 @@
     "declarationMap": true,
     "baseUrl": ".",
     "paths": {
-      "@agrimcp/ui/*": ["./src/*"]
+      "@fieldmcp/ui/*": ["./src/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],

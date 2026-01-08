@@ -10,7 +10,7 @@ import type {
   JDMapLayer,
   JDOrganization,
   JDUser,
-} from '@agrimcp/types';
+} from '@fieldmcp/types';
 
 interface DeereClientOptions {
   baseUrl: string;

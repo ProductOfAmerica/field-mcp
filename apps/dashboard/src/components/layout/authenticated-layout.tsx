@@ -1,4 +1,4 @@
-import { SidebarInset, SidebarProvider } from '@agrimcp/ui/components/sidebar';
+import { SidebarInset, SidebarProvider } from '@fieldmcp/ui/components/sidebar';
 import { redirect } from 'next/navigation';
 import { connection } from 'next/server';
 import { Header } from '@/components/layout/header';

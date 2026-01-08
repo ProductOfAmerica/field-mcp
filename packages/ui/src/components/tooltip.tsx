@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@agrimcp/ui/lib/utils';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import type * as React from 'react';
 

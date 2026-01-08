@@ -1,5 +1,5 @@
-import type { RateLimitResult, SubscriptionTier } from '@agrimcp/types';
-import { TIER_LIMITS } from '@agrimcp/types';
+import type { RateLimitResult, SubscriptionTier } from '@fieldmcp/types';
+import { TIER_LIMITS } from '@fieldmcp/types';
 import { getMinuteKey } from '../handlers/cache-invalidation.js';
 import type { Env } from '../lib/types.js';
 

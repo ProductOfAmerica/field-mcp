@@ -1,7 +1,7 @@
 'use client';
 
-import { buttonVariants } from '@agrimcp/ui/components/button';
-import { cn } from '@agrimcp/ui/lib/utils';
+import { buttonVariants } from '@fieldmcp/ui/components/button';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog';
 import type * as React from 'react';
 

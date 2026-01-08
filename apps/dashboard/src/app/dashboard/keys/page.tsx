@@ -2,14 +2,14 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-} from '@agrimcp/ui/components/alert';
+} from '@fieldmcp/ui/components/alert';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@agrimcp/ui/components/card';
+} from '@fieldmcp/ui/components/card';
 import { KeyIcon } from 'lucide-react';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
@@ -49,7 +49,7 @@ export default async function KeysPage() {
         <CardHeader>
           <CardTitle>Active Keys</CardTitle>
           <CardDescription>
-            Your API keys are used to authenticate requests to the AgriMCP API.
+            Your API keys are used to authenticate requests to the FieldMCP API.
           </CardDescription>
         </CardHeader>
         <CardContent>

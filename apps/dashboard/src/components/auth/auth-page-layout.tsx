@@ -1,19 +1,19 @@
 'use client';
 
-import { Button } from '@agrimcp/ui/components/button';
+import { Button } from '@fieldmcp/ui/components/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@agrimcp/ui/components/card';
-import { Separator } from '@agrimcp/ui/components/separator';
+} from '@fieldmcp/ui/components/card';
+import { Separator } from '@fieldmcp/ui/components/separator';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@agrimcp/ui/components/tooltip';
+} from '@fieldmcp/ui/components/tooltip';
 import { TractorIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -45,7 +45,7 @@ export function AuthPageLayout({
             <div className="flex size-9 items-center justify-center rounded-lg bg-green-600 text-white">
               <TractorIcon className="size-5" />
             </div>
-            <span className="text-xl font-semibold">AgriMCP</span>
+            <span className="text-xl font-semibold">FieldMCP</span>
           </Link>
 
           <div>

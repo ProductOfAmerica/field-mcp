@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@agrimcp/ui/lib/utils';
+import { cn } from '@fieldmcp/ui/lib/utils';
 import type * as React from 'react';
 
 function Table({ className, ...props }: React.ComponentProps<'table'>) {

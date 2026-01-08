@@ -1,9 +1,9 @@
--- AgriMCP Initial Schema
+-- FieldMCP Initial Schema
 
 -- Enable required extensions
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Developers table (users of AgriMCP platform)
+-- Developers table (users of FieldMCP platform)
 CREATE TABLE developers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE NOT NULL,

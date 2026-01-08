@@ -1,5 +1,5 @@
 {
-  "name": "@agrimcp/dashboard",
+  "name": "@fieldmcp/dashboard",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -11,8 +11,8 @@
     "lint": "biome check app/ components/ lib/"
   },
   "dependencies": {
-    "@agrimcp/types": "workspace:*",
-    "@agrimcp/ui": "workspace:*",
+    "@fieldmcp/types": "workspace:*",
+    "@fieldmcp/ui": "workspace:*",
     "@stripe/stripe-js": "^8.6.1",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.89.0",

@@ -1,4 +1,4 @@
-import { type SubscriptionTier, TIER_LIMITS } from '@agrimcp/types';
+import { type SubscriptionTier, TIER_LIMITS } from '@fieldmcp/types';
 import { NextResponse } from 'next/server';
 import { config } from '@/lib/config';
 import { getStripe } from '@/lib/stripe';

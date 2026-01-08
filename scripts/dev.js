@@ -109,7 +109,7 @@ function startMcpJohnDeere() {
 }
 
 async function main() {
-  console.log('\n🌾 AgriMCP Development Environment\n');
+  console.log('\n🌾 FieldMCP Development Environment\n');
 
   cleanWranglerCache();
   checkDockerRunning();

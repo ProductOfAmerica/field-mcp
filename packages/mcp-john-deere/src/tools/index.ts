@@ -1,4 +1,4 @@
-import type { CallToolResult } from '@agrimcp/types';
+import type { CallToolResult } from '@fieldmcp/types';
 import { z } from 'zod';
 import type { DeereApiClient } from '../client/deere-api.js';
 import * as normalize from '../normalize/responses.js';

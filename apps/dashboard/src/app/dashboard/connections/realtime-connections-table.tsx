@@ -1,13 +1,13 @@
 'use client';
 
-import { Badge } from '@agrimcp/ui/components/badge';
+import { Badge } from '@fieldmcp/ui/components/badge';
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from '@agrimcp/ui/components/empty';
+} from '@fieldmcp/ui/components/empty';
 import {
   Table,
   TableBody,
@@ -15,7 +15,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@agrimcp/ui/components/table';
+} from '@fieldmcp/ui/components/table';
 import type {
   RealtimeChannel,
   RealtimePostgresChangesPayload,

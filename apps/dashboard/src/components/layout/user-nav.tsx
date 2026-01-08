@@ -1,7 +1,7 @@
 'use client';
 
-import { Avatar, AvatarFallback } from '@agrimcp/ui/components/avatar';
-import { Button } from '@agrimcp/ui/components/button';
+import { Avatar, AvatarFallback } from '@fieldmcp/ui/components/avatar';
+import { Button } from '@fieldmcp/ui/components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +13,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from '@agrimcp/ui/components/dropdown-menu';
+} from '@fieldmcp/ui/components/dropdown-menu';
 import {
   LogOutIcon,
   MonitorIcon,

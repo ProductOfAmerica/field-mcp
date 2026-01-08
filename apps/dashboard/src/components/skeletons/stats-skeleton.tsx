@@ -1,5 +1,5 @@
-import { Card, CardContent } from '@agrimcp/ui/components/card';
-import { Skeleton } from '@agrimcp/ui/components/skeleton';
+import { Card, CardContent } from '@fieldmcp/ui/components/card';
+import { Skeleton } from '@fieldmcp/ui/components/skeleton';
 
 export function StatsSkeleton() {
   return (

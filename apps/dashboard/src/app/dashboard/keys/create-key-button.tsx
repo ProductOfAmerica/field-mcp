@@ -1,7 +1,7 @@
 'use client';
 
-import { Alert, AlertDescription } from '@agrimcp/ui/components/alert';
-import { Button } from '@agrimcp/ui/components/button';
+import { Alert, AlertDescription } from '@fieldmcp/ui/components/alert';
+import { Button } from '@fieldmcp/ui/components/button';
 import {
   Dialog,
   DialogContent,
@@ -10,9 +10,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@agrimcp/ui/components/dialog';
-import { Input } from '@agrimcp/ui/components/input';
-import { Label } from '@agrimcp/ui/components/label';
+} from '@fieldmcp/ui/components/dialog';
+import { Input } from '@fieldmcp/ui/components/input';
+import { Label } from '@fieldmcp/ui/components/label';
 import { CheckIcon, CopyIcon, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 

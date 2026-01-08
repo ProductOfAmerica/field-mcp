@@ -1,4 +1,4 @@
-import type { CallToolResult } from '@agrimcp/types';
+import type { CallToolResult } from '@fieldmcp/types';
 import { getToken } from './auth/token.js';
 import { DeereApiClient } from './client/deere-api.js';
 import * as tools from './tools/index.js';
