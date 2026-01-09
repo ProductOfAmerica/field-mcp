@@ -71,6 +71,10 @@ export function ConnectJohnDeereButton() {
                 value={farmerId}
                 onChange={(e) => setFarmerId(e.target.value)}
                 placeholder="e.g., farmer-123, john-smith"
+                autoComplete="off"
+                data-1p-ignore
+                data-lpignore="true"
+                data-form-type="other"
               />
               <p className="text-xs text-muted-foreground">
                 Your internal identifier for this farmer
