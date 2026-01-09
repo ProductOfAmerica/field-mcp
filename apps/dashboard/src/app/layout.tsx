@@ -14,8 +14,26 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : 'http://localhost:3000',
+  ),
   title: 'FieldMCP - Agricultural API Platform',
   description: 'Connect your AI to farm data in minutes, not weeks.',
+  appleWebApp: {
+    title: 'FieldMCP',
+  },
+  openGraph: {
+    title: 'FieldMCP - Agricultural API Platform',
+    description: 'Connect your AI to farm data in minutes, not weeks.',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'FieldMCP - Agricultural API Platform',
+    description: 'Connect your AI to farm data in minutes, not weeks.',
+  },
 };
 
 export default function RootLayout({

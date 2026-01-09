@@ -10,12 +10,7 @@ function getAppUrl(): string {
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
     return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
   }
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL;
-  }
-  throw new Error(
-    'Missing required environment variable: VERCEL_PROJECT_PRODUCTION_URL or NEXT_PUBLIC_APP_URL',
-  );
+  return 'http://localhost:3000';
 }
 
 export const config = {
