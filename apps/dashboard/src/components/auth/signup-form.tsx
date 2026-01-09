@@ -7,20 +7,19 @@ import { Input } from '@fieldmcp/ui/components/input';
 import { Label } from '@fieldmcp/ui/components/label';
 import { cn } from '@fieldmcp/ui/lib/utils';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useActionState, useState } from 'react';
+import { type AuthResult, signup } from '@/app/actions/auth';
 import { useFormField, validators } from '@/hooks/use-form-field';
-import { createClient } from '@/lib/supabase/client';
 
 export function SignupForm() {
   const [companyName, setCompanyName] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const supabase = createClient();
+  const [state, formAction, isPending] = useActionState<
+    AuthResult | null,
+    FormData
+  >(async (_prevState, formData) => signup(formData), null);
 
   const email = useFormField({
     initialValue: '',
@@ -46,48 +45,25 @@ export function SignupForm() {
     confirmPassword.value &&
     agreedToTerms;
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const { error } = await supabase.auth.signUp({
-      email: email.value,
-      password: password.value,
-      options: {
-        data: {
-          company_name: companyName,
-        },
-      },
-    });
-
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-    } else {
-      router.push('/dashboard');
-      router.refresh();
-    }
-  }
-
   const inputErrorClass =
     'border-destructive focus-visible:ring-destructive/50';
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
-      {error && (
+    <form className="space-y-4" action={formAction}>
+      {state?.error && (
         <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription>{state.error}</AlertDescription>
         </Alert>
       )}
 
       <div className="space-y-1">
-        <Label className="leading-5" htmlFor="signupEmail">
+        <Label className="leading-5" htmlFor="email">
           Email address*
         </Label>
         <Input
           type="email"
-          id="signupEmail"
+          id="email"
+          name="email"
           placeholder="Enter your email address"
           value={email.value}
           onChange={(e) => email.onChange(e.target.value)}
@@ -102,24 +78,27 @@ export function SignupForm() {
 
       <div className="space-y-1">
         <Label className="leading-5" htmlFor="companyName">
-          Company Name (optional)
+          Company Name*
         </Label>
         <Input
           type="text"
           id="companyName"
+          name="companyName"
           placeholder="Your company"
           value={companyName}
           onChange={(e) => setCompanyName(e.target.value)}
+          required
         />
       </div>
 
       <div className="w-full space-y-1">
-        <Label className="leading-5" htmlFor="signupPassword">
+        <Label className="leading-5" htmlFor="password">
           Password*
         </Label>
         <div className="relative">
           <Input
-            id="signupPassword"
+            id="password"
+            name="password"
             type={isPasswordVisible ? 'text' : 'password'}
             placeholder="Min. 8 characters"
             className={cn('pr-9', password.error && inputErrorClass)}
@@ -204,9 +183,9 @@ export function SignupForm() {
       <Button
         className="w-full"
         type="submit"
-        disabled={loading || !isFormValid}
+        disabled={isPending || !isFormValid}
       >
-        {loading ? 'Creating account...' : 'Sign up to FieldMCP'}
+        {isPending ? 'Creating account...' : 'Sign up to FieldMCP'}
       </Button>
     </form>
   );

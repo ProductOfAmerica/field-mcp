@@ -1,12 +1,27 @@
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
+
+const paramsSchema = z.object({
+  id: z.string().uuid('Invalid API key ID format'),
+});
 
 export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
+  const rawParams = await params;
+  const parsed = paramsSchema.safeParse(rawParams);
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: 'Invalid API key ID format' },
+      { status: 400 },
+    );
+  }
+
+  const { id } = parsed.data;
   const supabase = await createClient();
   const {
     data: { user },

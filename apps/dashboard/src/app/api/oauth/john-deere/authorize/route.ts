@@ -1,7 +1,16 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { config } from '@/lib/config';
 import { createClient } from '@/lib/supabase/server';
+
+const authorizeSchema = z.object({
+  farmer_id: z
+    .string()
+    .min(1, 'Farmer ID is required')
+    .max(100, 'Farmer ID too long')
+    .regex(/^[\w-]+$/, 'Invalid farmer ID format'),
+});
 
 export async function GET(request: Request) {
   const supabase = await createClient();
@@ -14,14 +23,18 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const farmerId = searchParams.get('farmer_id');
+  const parsed = authorizeSchema.safeParse({
+    farmer_id: searchParams.get('farmer_id'),
+  });
 
-  if (!farmerId) {
+  if (!parsed.success) {
     return NextResponse.json(
-      { error: 'farmer_id parameter is required' },
+      { error: parsed.error.errors[0]?.message ?? 'Invalid farmer_id' },
       { status: 400 },
     );
   }
+
+  const farmerId = parsed.data.farmer_id;
 
   const randomBytes = new Uint8Array(32);
   crypto.getRandomValues(randomBytes);

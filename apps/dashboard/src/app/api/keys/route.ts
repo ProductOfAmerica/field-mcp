@@ -1,6 +1,15 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { generateApiKey, hashApiKey } from '@/lib/api-keys';
 import { createClient } from '@/lib/supabase/server';
+
+const createKeySchema = z.object({
+  name: z
+    .string()
+    .max(100, 'Name must be 100 characters or less')
+    .optional()
+    .nullable(),
+});
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -12,8 +21,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body = await request.json();
-  const { name } = body;
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
+  const parsed = createKeySchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: 'Validation failed', details: parsed.error.flatten() },
+      { status: 400 },
+    );
+  }
+
+  const { name } = parsed.data;
 
   const { key, prefix } = generateApiKey();
   const keyHash = await hashApiKey(key);

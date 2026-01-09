@@ -1,8 +1,15 @@
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { config } from '@/lib/config';
 import { createClient } from '@/lib/supabase/server';
+
+const stateDataSchema = z.object({
+  developerId: z.string().uuid(),
+  farmerId: z.string().min(1).max(100),
+  returnUrl: z.string().startsWith('/'),
+});
 
 interface TokenResponse {
   access_token: string;
@@ -24,9 +31,17 @@ export async function GET(request: Request) {
   const stateDataStr = cookieStore.get('oauth_state_data')?.value;
 
   if (error) {
-    const returnUrl = stateDataStr
-      ? JSON.parse(stateDataStr).returnUrl
-      : '/dashboard/connections';
+    let returnUrl = '/dashboard/connections';
+    if (stateDataStr) {
+      try {
+        const parsed = stateDataSchema.safeParse(JSON.parse(stateDataStr));
+        if (parsed.success) {
+          returnUrl = parsed.data.returnUrl;
+        }
+      } catch {
+        // Use default returnUrl
+      }
+    }
     cookieStore.delete('oauth_state');
     cookieStore.delete('oauth_state_data');
     return NextResponse.redirect(
@@ -63,11 +78,24 @@ export async function GET(request: Request) {
     );
   }
 
-  const stateData = JSON.parse(stateDataStr) as {
-    developerId: string;
-    farmerId: string;
-    returnUrl: string;
-  };
+  let stateData: z.infer<typeof stateDataSchema>;
+  try {
+    const parsed = stateDataSchema.safeParse(JSON.parse(stateDataStr));
+    if (!parsed.success) {
+      cookieStore.delete('oauth_state');
+      cookieStore.delete('oauth_state_data');
+      return NextResponse.redirect(
+        new URL('/dashboard/connections?error=Invalid+state+data', request.url),
+      );
+    }
+    stateData = parsed.data;
+  } catch {
+    cookieStore.delete('oauth_state');
+    cookieStore.delete('oauth_state_data');
+    return NextResponse.redirect(
+      new URL('/dashboard/connections?error=Invalid+state+data', request.url),
+    );
+  }
 
   const basicAuth = Buffer.from(
     `${config.johnDeere.clientId}:${config.johnDeere.clientSecret}`,

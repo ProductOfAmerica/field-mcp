@@ -1,8 +1,14 @@
 import { type SubscriptionTier, TIER_LIMITS } from '@fieldmcp/types';
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { config } from '@/lib/config';
 import { getStripe } from '@/lib/stripe';
 import { createServiceClient } from '@/lib/supabase/service';
+
+const checkoutMetadataSchema = z.object({
+  developer_id: z.string().uuid(),
+  tier: z.enum(['free', 'developer', 'startup', 'enterprise']),
+});
 
 async function invalidateGatewayCache(developerId: string): Promise<void> {
   if (!config.gateway.internalSecret) return;
@@ -43,10 +49,10 @@ export async function POST(request: Request) {
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object;
-      const developerId = session.metadata?.developer_id;
-      const tier = session.metadata?.tier;
+      const parsed = checkoutMetadataSchema.safeParse(session.metadata);
 
-      if (developerId && tier) {
+      if (parsed.success) {
+        const { developer_id: developerId, tier } = parsed.data;
         await supabaseAdmin
           .from('subscriptions')
           .update({
@@ -59,6 +65,8 @@ export async function POST(request: Request) {
           })
           .eq('developer_id', developerId);
         await invalidateGatewayCache(developerId);
+      } else {
+        console.error('Invalid checkout metadata:', parsed.error.flatten());
       }
       break;
     }

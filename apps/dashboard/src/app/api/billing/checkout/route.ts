@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { config, TIER_TO_PRICE } from '@/lib/config';
 import { getStripe } from '@/lib/stripe';
 import { createClient } from '@/lib/supabase/server';
+
+const checkoutSchema = z.object({
+  tier: z.enum(['developer', 'startup'], {
+    errorMap: () => ({ message: 'Invalid subscription tier' }),
+  }),
+});
 
 export async function POST(request: Request) {
   try {
@@ -14,13 +21,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { tier } = body as { tier: 'developer' | 'startup' };
-
-    const priceId = TIER_TO_PRICE[tier];
-    if (!priceId) {
-      return NextResponse.json({ error: 'Invalid tier' }, { status: 400 });
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
     }
+
+    const parsed = checkoutSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message ?? 'Invalid tier' },
+        { status: 400 },
+      );
+    }
+
+    const { tier } = parsed.data;
+    const priceId = TIER_TO_PRICE[tier];
 
     const { data: subscription } = await supabase
       .from('subscriptions')

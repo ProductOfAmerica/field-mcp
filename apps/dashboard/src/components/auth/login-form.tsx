@@ -6,17 +6,16 @@ import { Input } from '@fieldmcp/ui/components/input';
 import { Label } from '@fieldmcp/ui/components/label';
 import { cn } from '@fieldmcp/ui/lib/utils';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useActionState, useState } from 'react';
+import { type AuthResult, login } from '@/app/actions/auth';
 import { useFormField, validators } from '@/hooks/use-form-field';
-import { createClient } from '@/lib/supabase/client';
 
 export function LoginForm() {
   const [isVisible, setIsVisible] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const supabase = createClient();
+  const [state, formAction, isPending] = useActionState<
+    AuthResult | null,
+    FormData
+  >(async (_prevState, formData) => login(formData), null);
 
   const email = useFormField({
     initialValue: '',
@@ -31,43 +30,25 @@ export function LoginForm() {
   const isFormValid =
     email.isValid && email.value && password.isValid && password.value;
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email.value,
-      password: password.value,
-    });
-
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-    } else {
-      router.push('/dashboard');
-      router.refresh();
-    }
-  }
-
   const inputErrorClass =
     'border-destructive focus-visible:ring-destructive/50';
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
-      {error && (
+    <form className="space-y-4" action={formAction}>
+      {state?.error && (
         <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription>{state.error}</AlertDescription>
         </Alert>
       )}
 
       <div className="space-y-1">
-        <Label className="leading-5" htmlFor="userEmail">
+        <Label className="leading-5" htmlFor="email">
           Email address*
         </Label>
         <Input
           type="email"
-          id="userEmail"
+          id="email"
+          name="email"
           placeholder="Enter your email address"
           value={email.value}
           onChange={(e) => email.onChange(e.target.value)}
@@ -87,6 +68,7 @@ export function LoginForm() {
         <div className="relative">
           <Input
             id="password"
+            name="password"
             type={isVisible ? 'text' : 'password'}
             placeholder="Enter your password"
             className={cn('pr-9', password.error && inputErrorClass)}
@@ -122,9 +104,9 @@ export function LoginForm() {
       <Button
         className="w-full"
         type="submit"
-        disabled={loading || !isFormValid}
+        disabled={isPending || !isFormValid}
       >
-        {loading ? 'Signing in...' : 'Sign in to FieldMCP'}
+        {isPending ? 'Signing in...' : 'Sign in to FieldMCP'}
       </Button>
     </form>
   );
