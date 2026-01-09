@@ -1,5 +1,19 @@
 # FieldMCP
 
+> **⛔ CRITICAL: NEVER USE `cd` IN BASH COMMANDS ⛔**
+>
+> You are already in the working directory. Run commands directly.
+>
+> ❌ WRONG: `cd apps/dashboard && pnpm add package`
+>
+> ✅ RIGHT: `pnpm --filter dashboard add package`
+>
+> ❌ WRONG: `cd packages/supabase && pnpm test`
+>
+> ✅ RIGHT: `pnpm --filter @fieldmcp/supabase test`
+>
+> This is a pnpm monorepo. Use `--filter <package-name>` to target workspaces.
+
 MCP infrastructure platform for agricultural APIs. Developers integrate once, access John Deere (and later Climate
 FieldView, CNHi) through unified MCP servers.
 
@@ -71,7 +85,7 @@ fieldmcp/
 
 ## Standards
 
-- **NEVER use `cd` in Bash commands** - You're already in the working directory. Just run commands directly (e.g., `git status`, not `cd /some/path && git status`)
+- **⛔ NEVER use `cd` in Bash commands** - See critical warning at top of file. Use `pnpm --filter <package>` for workspace commands.
 - TypeScript everywhere, strict mode
 - Biome for linting/formatting (NOT ESLint/Prettier)
 - pnpm workspaces
