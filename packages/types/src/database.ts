@@ -86,3 +86,16 @@ export const TIER_LIMITS = {
   SubscriptionTier,
   { monthly: number; perMinute: number }
 >;
+
+export interface RateLimitResult {
+  allowed: boolean;
+  remaining: number;
+  resetAt: number;
+}
+
+export interface ApiKeyValidation {
+  valid: boolean;
+  developer?: Developer;
+  subscription?: Subscription;
+  keyId?: string;
+}

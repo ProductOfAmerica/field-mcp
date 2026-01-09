@@ -16,7 +16,8 @@
     "test:e2e:watch": "vitest --config vitest.config.ts",
     "supabase:start": "supabase start --workdir packages/supabase",
     "supabase:stop": "supabase stop --workdir packages/supabase",
-    "supabase:reset": "supabase db reset --workdir packages/supabase"
+    "supabase:reset": "supabase db reset --workdir packages/supabase",
+    "copy-types": "node scripts/copy-types.js"
   },
   "keywords": [],
   "author": "",
@@ -32,5 +33,8 @@
   "engines": {
     "pnpm": ">=10.27.0",
     "node": ">=22"
+  },
+  "volta": {
+    "node": "22.21.1"
   }
 }

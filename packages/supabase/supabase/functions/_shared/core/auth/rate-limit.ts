@@ -1,11 +1,9 @@
+import {
+  type RateLimitResult,
+  type SubscriptionTier,
+  TIER_LIMITS,
+} from '../../types/database.ts';
 import { cacheDelete, cacheGet, cacheSet } from '../routing/cache.ts';
-
-const TIER_LIMITS: Record<string, { perMinute: number; perMonth: number }> = {
-  free: { perMinute: 10, perMonth: 1000 },
-  developer: { perMinute: 100, perMonth: 10000 },
-  startup: { perMinute: 500, perMonth: 100000 },
-  enterprise: { perMinute: 2000, perMonth: 1000000 },
-};
 
 function getCurrentMinuteKey(): string {
   const now = new Date();
@@ -68,17 +66,14 @@ export async function recordAuthFailure(ip: string): Promise<void> {
   console.log(`[rate_limit:auth] failure: ${ip} (${newData.count} attempts)`);
 }
 
-export interface RateLimitResult {
-  allowed: boolean;
-  remaining: number;
-  resetAt: number;
-}
+export type { RateLimitResult };
 
 export async function checkRateLimit(
   developerId: string,
   tier: string,
 ): Promise<RateLimitResult> {
-  const limits = TIER_LIMITS[tier] ?? TIER_LIMITS.free;
+  const tierKey = tier as SubscriptionTier;
+  const limits = TIER_LIMITS[tierKey] ?? TIER_LIMITS.free;
   const minuteKey = getCurrentMinuteKey();
   const kvKey = `ratelimit:${developerId}:${minuteKey}`;
 

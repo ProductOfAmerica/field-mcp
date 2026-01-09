@@ -4,7 +4,7 @@
   "globalEnv": ["NODE_ENV"],
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["copy-types", "^build"],
       "inputs": [
         "$TURBO_DEFAULT$",
         ".env.local",
@@ -28,7 +28,7 @@
       ]
     },
     "check": {
-      "dependsOn": ["^check"],
+      "dependsOn": ["copy-types", "^check"],
       "inputs": ["$TURBO_DEFAULT$", "tsconfig.json"],
       "outputs": []
     },
@@ -42,6 +42,11 @@
     },
     "clean": {
       "cache": false
+    },
+    "copy-types": {
+      "inputs": ["packages/types/src/**/*.ts"],
+      "outputs": ["packages/supabase/supabase/functions/_shared/types/**"],
+      "cache": true
     }
   }
 }

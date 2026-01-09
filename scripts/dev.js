@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { execSync } from 'node:child_process';
 import {
   checkDependencies,
   checkDockerRunning,
@@ -14,6 +15,11 @@ import {
   updateEnvFile,
 } from './lib/utils.js';
 
+function copyTypes() {
+  log('TYPES', colors.yellow, 'Copying shared types to Edge Functions...');
+  execSync('node scripts/copy-types.js', { stdio: 'inherit' });
+}
+
 function startNextDev() {
   log('NEXT', colors.blue, 'Starting Next.js dev server...');
   return spawnWithPrefix('pnpm', ['dev'], DASHBOARD_DIR, 'NEXT', colors.blue);
@@ -24,6 +30,7 @@ async function main() {
 
   checkDockerRunning();
   const { hasStripe } = checkDependencies();
+  copyTypes();
 
   const supabaseCreds = await startSupabase();
   log('SUPABASE', colors.green, 'Started successfully!');

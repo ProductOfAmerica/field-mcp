@@ -10,6 +10,7 @@
     "db:new": "supabase migration new",
     "db:seed": "supabase db reset --seed-only",
     "functions:serve": "supabase functions serve",
-    "lint": "biome check supabase/functions/"
+    "lint": "biome check supabase/functions/",
+    "copy-types": "node ../../scripts/copy-types.js"
   }
 }

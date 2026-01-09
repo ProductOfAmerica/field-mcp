@@ -1,10 +1,7 @@
 import { getToken } from '../_shared/core/auth/token.ts';
 import { DeereApiClient } from '../_shared/providers/deere/deere-api.ts';
 import * as tools from '../_shared/providers/deere/deere-tools.ts';
-
-interface CallToolResult {
-  content: Array<{ type: string; text: string }>;
-}
+import type { CallToolResult } from '../_shared/types/mcp.ts';
 
 Deno.serve(async (request: Request): Promise<Response> => {
   if (request.method === 'OPTIONS') {

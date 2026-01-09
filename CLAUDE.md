@@ -147,7 +147,6 @@ export async function toolHandler(input, client) {
 - `JOHN_DEERE_CLIENT_ID`
 - `JOHN_DEERE_CLIENT_SECRET`
 - `JOHN_DEERE_API_BASE` - `https://sandboxapi.deere.com/platform` or `https://api.deere.com/platform`
-- `JOHN_DEERE_FUNCTION_URL` - URL to mcp-john-deere function
 - `INTERNAL_SECRET` - Secret for cache invalidation endpoint
 
 ### apps/dashboard (.env.local)

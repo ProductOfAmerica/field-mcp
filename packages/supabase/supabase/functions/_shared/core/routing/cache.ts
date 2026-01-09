@@ -11,6 +11,7 @@ export async function cacheGet<T>(
   const supabase = getSupabaseClient();
 
   const { data, error } = await supabase
+    .schema('cache')
     .from(table)
     .select('value')
     .eq('key', key)
@@ -34,7 +35,7 @@ export async function cacheSet(
   const ttl = options.expirationTtl ?? 300;
   const expiresAt = new Date(Date.now() + ttl * 1000).toISOString();
 
-  const { error } = await supabase.from(table).upsert(
+  const { error } = await supabase.schema('cache').from(table).upsert(
     {
       key,
       value,
@@ -56,7 +57,11 @@ export async function cacheDelete(
 ): Promise<void> {
   const supabase = getSupabaseClient();
 
-  const { error } = await supabase.from(table).delete().eq('key', key);
+  const { error } = await supabase
+    .schema('cache')
+    .from(table)
+    .delete()
+    .eq('key', key);
 
   if (error) {
     console.error(`[cache] delete failed for ${table}:`, error);
@@ -70,6 +75,7 @@ export async function cacheDeletePattern(
   const supabase = getSupabaseClient();
 
   const { data, error } = await supabase
+    .schema('cache')
     .from(table)
     .delete()
     .like('key', pattern)

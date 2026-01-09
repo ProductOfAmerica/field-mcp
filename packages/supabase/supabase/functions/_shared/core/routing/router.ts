@@ -1,6 +1,7 @@
+import type { Provider } from '../../types/fieldmcp.ts';
 import { getSupabaseClient } from '../supabase-client.ts';
 
-export type Provider = 'john_deere' | 'climate' | 'cnhi';
+export type { Provider };
 
 export async function getFarmerConnections(
   developerId: string,

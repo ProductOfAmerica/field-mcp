@@ -1,10 +1,7 @@
 import { z } from 'npm:zod@3';
+import type { CallToolResult } from '../../types/mcp.ts';
 import type { DeereApiClient } from './deere-api.ts';
 import * as normalize from './deere-normalize.ts';
-
-interface CallToolResult {
-  content: Array<{ type: string; text: string }>;
-}
 
 function stripControlChars(s: string): string {
   return s
@@ -27,7 +24,9 @@ const safeIdOptional = z
   .transform(stripControlChars)
   .optional();
 
-const providerSchema = z.enum(['john_deere', 'climate', 'cnhi']).optional();
+const providerSchema = z
+  .enum(['john_deere', 'climate_fieldview', 'cnhi'])
+  .optional();
 
 export const listOrganizationsSchema = z.object({
   provider: providerSchema,
@@ -264,7 +263,7 @@ export async function listAssets(
 
 const providerProperty = {
   type: 'string',
-  enum: ['john_deere', 'climate', 'cnhi'],
+  enum: ['john_deere', 'climate_fieldview', 'cnhi'],
   description: 'Provider to use. Optional if only one provider is connected.',
 };
 

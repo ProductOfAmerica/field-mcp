@@ -97,7 +97,6 @@ fieldmcp/
 - `JOHN_DEERE_CLIENT_ID`
 - `JOHN_DEERE_CLIENT_SECRET`
 - `JOHN_DEERE_API_BASE`
-- `JOHN_DEERE_FUNCTION_URL`
 - `INTERNAL_SECRET`
 
 ### apps/dashboard (.env.local)

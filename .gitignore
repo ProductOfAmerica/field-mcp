@@ -152,3 +152,6 @@ vite.config.ts.timestamp-*
 .vercel
 .env*.local
 /packages/mcp-gateway/.dev.vars
+
+# Generated types for Edge Functions
+packages/supabase/supabase/functions/_shared/types/

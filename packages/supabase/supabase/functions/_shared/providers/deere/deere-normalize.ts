@@ -1,4 +1,18 @@
 import type {
+  Asset,
+  Client,
+  CropType,
+  Equipment,
+  Farm,
+  Field,
+  GeoJsonPolygon,
+  HarvestRecord,
+  MapLayer,
+  Organization,
+  PlantingRecord,
+  User,
+} from '../../types/fieldmcp.ts';
+import type {
   JDAsset,
   JDClient,
   JDCropType,
@@ -10,115 +24,6 @@ import type {
   JDOrganization,
   JDUser,
 } from './deere-api.ts';
-
-interface GeoJsonPolygon {
-  type: 'Polygon';
-  coordinates: number[][][];
-}
-
-interface Organization {
-  id: string;
-  externalId: string;
-  provider: string;
-  name: string;
-  createdAt: string;
-}
-
-interface Field {
-  id: string;
-  externalId: string;
-  provider: string;
-  organizationId: string;
-  name: string;
-  acres: number;
-  boundaryGeoJson?: GeoJsonPolygon;
-  activeCrop?: string;
-}
-
-interface HarvestRecord {
-  id: string;
-  fieldId: string;
-  date: string;
-  crop: string;
-  yieldPerAcre: number;
-  yieldUnit: string;
-  totalArea: number;
-}
-
-interface PlantingRecord {
-  id: string;
-  fieldId: string;
-  date: string;
-  crop: string;
-  variety: string;
-  populationPerAcre: number;
-  totalArea: number;
-}
-
-interface Equipment {
-  id: string;
-  externalId: string;
-  provider: string;
-  organizationId: string;
-  name: string;
-  type: 'tractor' | 'combine' | 'sprayer' | 'planter' | 'other';
-  make?: string;
-  model?: string;
-  year?: number;
-}
-
-interface Farm {
-  id: string;
-  externalId: string;
-  provider: string;
-  organizationId: string;
-  name: string;
-}
-
-interface Client {
-  id: string;
-  externalId: string;
-  provider: string;
-  organizationId: string;
-  name: string;
-}
-
-interface MapLayer {
-  id: string;
-  fieldId: string;
-  type: 'yield' | 'elevation' | 'soil' | 'prescription' | 'other';
-  name: string;
-  date: string;
-}
-
-interface CropType {
-  id: string;
-  externalId: string;
-  name: string;
-}
-
-interface User {
-  id: string;
-  externalId: string;
-  provider: string;
-  organizationId: string;
-  accountName: string;
-  givenName?: string;
-  familyName?: string;
-  userType?: string;
-}
-
-interface Asset {
-  id: string;
-  externalId: string;
-  provider: string;
-  organizationId: string;
-  title: string;
-  assetType?: string;
-  assetCategory?: string;
-  assetSubType?: string;
-  serialNumber?: string;
-}
 
 export function normalizeOrganization(jd: JDOrganization): Organization {
   return {
@@ -278,24 +183,25 @@ export function normalizeAsset(jd: JDAsset, organizationId: string): Asset {
     provider: 'john_deere',
     organizationId,
     title: jd.title,
-    assetType: jd.assetType,
+    assetType: jd.assetType ?? 'unknown',
     assetCategory: jd.assetCategory,
     assetSubType: jd.assetSubType,
     serialNumber: jd.serialNumber,
   };
 }
 
+// Re-export types from shared types
 export type {
-  Organization,
-  Field,
-  HarvestRecord,
-  PlantingRecord,
+  Asset,
+  Client,
+  CropType,
   Equipment,
   Farm,
-  Client,
-  MapLayer,
-  CropType,
-  User,
-  Asset,
+  Field,
   GeoJsonPolygon,
-};
+  HarvestRecord,
+  MapLayer,
+  Organization,
+  PlantingRecord,
+  User,
+} from '../../types/fieldmcp.ts';

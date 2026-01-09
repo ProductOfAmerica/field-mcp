@@ -4,8 +4,8 @@ project_id = "fieldmcp"
 [api]
 enabled = true
 port = 54321
-schemas = ["public"]
-extra_search_path = ["public", "extensions"]
+schemas = ["public", "cache"]
+extra_search_path = ["public", "extensions", "cache"]
 max_rows = 1000
 
 [db]
@@ -40,3 +40,9 @@ enable_anonymous_sign_ins = false
 
 [auth.external.github]
 enabled = false
+
+[functions.mcp-gateway]
+verify_jwt = false
+
+[functions.mcp-john-deere]
+verify_jwt = false

@@ -32,7 +32,8 @@ import {
   validateJsonDepth,
 } from '../_shared/core/validation.ts';
 
-const JOHN_DEERE_FUNCTION_URL = Deno.env.get('JOHN_DEERE_FUNCTION_URL') ?? '';
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
+const JOHN_DEERE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/mcp-john-deere`;
 
 async function handleMcpRequest(request: Request): Promise<Response> {
   const startTime = Date.now();
@@ -286,9 +287,10 @@ Deno.serve(async (request: Request): Promise<Response> => {
 
   const url = new URL(request.url);
 
+  // Health check - GET only
   if (
-    url.pathname === '/mcp-gateway/health' ||
-    url.pathname === '/mcp-gateway'
+    request.method === 'GET' &&
+    (url.pathname === '/mcp-gateway/health' || url.pathname === '/mcp-gateway')
   ) {
     return jsonResponse({ status: 'ok' }, 200, CORS_HEADERS);
   }

@@ -1,4 +1,4 @@
-const GATEWAY_URL = process.env.MCP_GATEWAY_URL || 'http://localhost:8787';
+const GATEWAY_URL = process.env.MCP_GATEWAY_URL!;
 const API_KEY = process.env.TEST_API_KEY!;
 const FARMER_ID = process.env.TEST_FARMER_ID!;
 
@@ -13,7 +13,7 @@ export async function mcpCall(
   args: Record<string, unknown>,
   options?: { farmerId?: string; apiKey?: string },
 ): Promise<McpResponse> {
-  const response = await fetch(`${GATEWAY_URL}/v1/mcp`, {
+  const response = await fetch(`${GATEWAY_URL}/mcp-gateway`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ export async function mcpListTools(options?: {
   farmerId?: string;
   apiKey?: string;
 }): Promise<McpResponse> {
-  const response = await fetch(`${GATEWAY_URL}/v1/mcp`, {
+  const response = await fetch(`${GATEWAY_URL}/mcp-gateway`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -61,7 +61,15 @@ export async function rawRequest(
     rawBody?: boolean;
   },
 ): Promise<Response> {
-  return fetch(`${GATEWAY_URL}${path}`, {
+  let url: string;
+  if (path === '' || path === '/') {
+    url = `${GATEWAY_URL}/mcp-gateway`;
+  } else if (path.startsWith('/mcp-gateway')) {
+    url = `${GATEWAY_URL}${path}`;
+  } else {
+    url = `${GATEWAY_URL}/mcp-gateway${path}`;
+  }
+  return fetch(url, {
     method: options?.method ?? 'POST',
     headers: {
       'Content-Type': 'application/json',

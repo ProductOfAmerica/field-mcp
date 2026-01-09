@@ -15,6 +15,11 @@ import {
   updateEnvFile,
 } from './lib/utils.js';
 
+function copyTypes() {
+  log('TYPES', colors.yellow, 'Copying shared types to Edge Functions...');
+  execSync('node scripts/copy-types.js', { stdio: 'inherit' });
+}
+
 function buildNext() {
   log('NEXT', colors.blue, 'Building Next.js for production...');
   execSync('pnpm build', { cwd: DASHBOARD_DIR, stdio: 'inherit' });
@@ -31,6 +36,7 @@ async function main() {
 
   checkDockerRunning();
   const { hasStripe } = checkDependencies();
+  copyTypes();
 
   const supabaseCreds = await startSupabase();
   log('SUPABASE', colors.green, 'Started successfully!');

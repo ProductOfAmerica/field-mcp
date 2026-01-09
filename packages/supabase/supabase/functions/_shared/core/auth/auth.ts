@@ -1,31 +1,9 @@
+import type { ApiKeyValidation } from '../../types/database.ts';
 import { API_KEY_CACHE_TTL } from '../constants.ts';
 import { cacheGet, cacheSet } from '../routing/cache.ts';
 import { getSupabaseClient } from '../supabase-client.ts';
 
-export interface ApiKeyValidation {
-  valid: boolean;
-  developer?: {
-    id: string;
-    email: string;
-    company_name: string | null;
-    created_at: string;
-    updated_at: string;
-  };
-  subscription?: {
-    id: string;
-    developer_id: string;
-    stripe_subscription_id: string | null;
-    stripe_customer_id: string | null;
-    tier: 'free' | 'developer' | 'startup' | 'enterprise';
-    status: 'active' | 'canceled' | 'past_due' | 'trialing';
-    monthly_request_limit: number;
-    current_period_start: string | null;
-    current_period_end: string | null;
-    created_at: string;
-    updated_at: string;
-  };
-  keyId?: string;
-}
+export type { ApiKeyValidation };
 
 async function sha256(str: string): Promise<string> {
   const encoder = new TextEncoder();

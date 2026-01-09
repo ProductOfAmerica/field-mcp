@@ -3,16 +3,12 @@
     "allow": [
       "Bash(pnpm lint:fix:*)",
       "Bash(pnpm check:*)",
-      "Bash(pnpm lint:*)",
       "Bash(pnpm install:*)",
       "mcp__next-devtools-mcp__nextjs_index",
       "mcp__next-devtools-mcp__nextjs_call",
       "mcp__supabase__search_docs"
     ],
     "deny": [],
-    "ask": [],
-    "additionalDirectories": [
-      "C:\\c\\Users\\eelwo\\WebstormProjects"
-    ]
+    "ask": []
   }
 }

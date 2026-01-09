@@ -7,6 +7,7 @@ on:
     paths:
       - 'packages/supabase/supabase/migrations/**'
       - 'packages/supabase/supabase/functions/**'
+      - 'packages/types/src/**'
 
 jobs:
   deploy:
@@ -20,6 +21,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Copy types to Edge Functions
+        run: node scripts/copy-types.js
+
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
@@ -32,6 +41,16 @@ jobs:
       - name: Push migrations
         working-directory: packages/supabase
         run: supabase db push
+
+      - name: Set Edge Function secrets
+        working-directory: packages/supabase
+        run: |
+          supabase secrets set \
+            JOHN_DEERE_CLIENT_ID=${{ secrets.JOHN_DEERE_CLIENT_ID }} \
+            JOHN_DEERE_CLIENT_SECRET=${{ secrets.JOHN_DEERE_CLIENT_SECRET }} \
+            JOHN_DEERE_API_BASE=${{ secrets.JOHN_DEERE_API_BASE }} \
+            INTERNAL_SECRET=${{ secrets.INTERNAL_SECRET }} \
+            --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
 
       - name: Deploy Edge Functions
         working-directory: packages/supabase
