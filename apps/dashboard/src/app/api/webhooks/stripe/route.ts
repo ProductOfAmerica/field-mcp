@@ -14,7 +14,7 @@ async function invalidateGatewayCache(developerId: string): Promise<void> {
   if (!config.gateway.internalSecret) return;
 
   try {
-    await fetch(`${config.gateway.url}/mcp-gateway/internal/invalidate-cache`, {
+    await fetch(`${config.gateway.url}/functions/v1/mcp-gateway/internal/invalidate-cache`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
