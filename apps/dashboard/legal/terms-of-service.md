@@ -129,7 +129,7 @@ For farmer data accessed through the Service:
 
 ### 5.3 Token Storage
 
-We store OAuth tokens (access and refresh tokens) for farmer connections to enable API access and automatic token refresh. These tokens are encrypted with AES-256-GCM and stored in our database with row-level security, ensuring only you can access your connections.
+We store OAuth tokens (access and refresh tokens) for farmer connections to enable API access and automatic token refresh. These tokens are encrypted with ChaCha20-Poly1305 authenticated encryption (with quarterly key rotation) and stored in our database with row-level security, ensuring only you can access your connections.
 
 ### 5.4 Connection Failures
 

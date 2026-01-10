@@ -143,8 +143,9 @@ We ensure that personnel authorized to process Personal Data:
 We implement and maintain appropriate technical and organizational measures to protect Personal Data, including:
 
 **Encryption:**
-- OAuth tokens encrypted at rest using AES-256-GCM
+- OAuth tokens encrypted at rest using ChaCha20-Poly1305 authenticated encryption
 - Encryption keys stored in Supabase Vault (isolated from database)
+- Automated quarterly key rotation with natural token migration
 - All data transmitted over HTTPS/TLS 1.2+
 
 **Access Controls:**
@@ -365,7 +366,7 @@ Address: [PHYSICAL_ADDRESS]
 
 | Data | Method | Key Management |
 |------|--------|----------------|
-| OAuth tokens at rest | AES-256-GCM | Supabase Vault |
+| OAuth tokens at rest | ChaCha20-Poly1305 | Supabase Vault (quarterly rotation) |
 | Data in transit | TLS 1.2+ | Managed certificates |
 | API keys | SHA-256 hash | Not reversible |
 | Passwords | bcrypt (Supabase Auth) | Per-user salt |

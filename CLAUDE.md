@@ -115,8 +115,7 @@ fieldmcp/
 │           │   │   ├── providers/deere/  # John Deere API client
 │           │   │   └── types/            # Shared types for Edge Functions
 │           │   ├── mcp-gateway/          # API gateway - auth, rate limits, routing
-│           │   ├── mcp-john-deere/       # John Deere MCP server
-│           │   └── refresh-tokens/       # Token refresh job
+│           │   └── mcp-john-deere/       # John Deere MCP server
 │           └── migrations/               # Database migrations
 ├── scripts/                              # Build/dev scripts
 │   └── lib/                              # Script utilities

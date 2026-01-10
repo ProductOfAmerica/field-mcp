@@ -49,6 +49,3 @@ verify_jwt = false
 
 [functions.store-tokens]
 verify_jwt = false
-
-[functions.refresh-tokens]
-verify_jwt = false
