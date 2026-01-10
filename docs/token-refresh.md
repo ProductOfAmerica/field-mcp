@@ -21,16 +21,17 @@ refresh-tokens Edge Function
 **Why Edge Function instead of SQL?**
 
 The previous SQL-based approach couldn't handle app-level encryption. Edge Functions can:
+
 - Decrypt tokens using the crypto module
 - Re-encrypt refreshed tokens
 - Access Vault via RPC for the encryption key
 
 **Two refresh mechanisms:**
 
-| Mechanism | When | Purpose |
-|-----------|------|---------|
-| pg_cron (proactive) | Every 15 min | Keeps tokens fresh even with no traffic |
-| On-demand (`token.ts`) | During MCP requests | Fallback when token is about to expire |
+| Mechanism              | When                | Purpose                                 |
+|------------------------|---------------------|-----------------------------------------|
+| pg_cron (proactive)    | Every 15 min        | Keeps tokens fresh even with no traffic |
+| On-demand (`token.ts`) | During MCP requests | Fallback when token is about to expire  |
 
 If refresh fails, `needs_reauth` is set to `true` and the dashboard shows "Needs Re-authentication".
 
@@ -38,22 +39,22 @@ If refresh fails, `needs_reauth` is set to `true` and the dashboard shows "Needs
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                          pg_cron                                 │
+│                          pg_cron                                │
 │  Schedule: */15 * * * * (every 15 minutes)                      │
-│  Job: call_refresh_tokens_edge_function()                        │
+│  Job: call_refresh_tokens_edge_function()                       │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│                          pg_net                                  │
-│  HTTP POST to Edge Function (async)                              │
-│  Auth: Bearer <service_role_key>                                 │
+│                          pg_net                                 │
+│  HTTP POST to Edge Function (async)                             │
+│  Auth: Bearer <service_role_key>                                │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│                 refresh-tokens Edge Function                     │
-│  1. Query tokens expiring in < 20 minutes                        │
-│  2. For each: decrypt → refresh → encrypt → update               │
-│  3. Mark needs_reauth=true on failure                            │
+│                 refresh-tokens Edge Function                    │
+│  1. Query tokens expiring in < 20 minutes                       │
+│  2. For each: decrypt → refresh → encrypt → update              │
+│  3. Mark needs_reauth=true on failure                           │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -61,7 +62,8 @@ If refresh fails, `needs_reauth` is set to `true` and the dashboard shows "Needs
 
 ### Local Development
 
-Handled automatically by `pnpm supabase:reset` via the seed template. Just ensure these are set in `packages/supabase/.env.local`:
+Handled automatically by `pnpm supabase:reset` via the seed template. Just ensure these are set in
+`packages/supabase/.env.local`:
 
 ```bash
 SUPABASE_URL=http://host.docker.internal:54321
@@ -138,10 +140,14 @@ Run these queries via **Supabase Dashboard → SQL Editor**:
 
 ```sql
 -- Check cron job
-SELECT jobname, schedule FROM cron.job WHERE jobname = 'refresh-expiring-tokens';
+SELECT jobname, schedule
+FROM cron.job
+WHERE jobname = 'refresh-expiring-tokens';
 
 -- Check vault secrets exist (doesn't reveal values)
-SELECT name FROM vault.decrypted_secrets WHERE name LIKE 'john_deere%';
+SELECT name
+FROM vault.decrypted_secrets
+WHERE name LIKE 'john_deere%';
 
 -- Check app settings
 SHOW app.settings.supabase_url;
@@ -156,20 +162,21 @@ FROM public.farmer_connections;
 -- Check cron logs
 SELECT jobname, status, return_message, start_time
 FROM cron.job_run_details
-ORDER BY start_time DESC LIMIT 10;
+ORDER BY start_time DESC
+LIMIT 10;
 ```
 
 ## Troubleshooting
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `app.settings not configured` | Missing ALTER DATABASE settings | Add supabase_url and service_role_key |
-| `processed: 0, failed: 0` | No tokens expiring soon | Tokens are fresh, nothing to do |
-| `needs_reauth: true` | Refresh token invalid | User must reconnect via dashboard |
-| `John Deere credentials not configured` | Missing vault secrets | Add secrets per Setup section |
-| `HTTP 401: invalid_client` | Wrong credentials in vault | Verify client ID/secret match John Deere portal |
-| `Failed to retrieve encryption key` | Missing encryption key in Vault | See [Token Encryption](./token-encryption.md) setup |
-| `Connection requires re-authentication` | Token decryption failed or expired | User must reconnect via dashboard |
+| Symptom                                 | Cause                              | Fix                                                 |
+|-----------------------------------------|------------------------------------|-----------------------------------------------------|
+| `app.settings not configured`           | Missing ALTER DATABASE settings    | Add supabase_url and service_role_key               |
+| `processed: 0, failed: 0`               | No tokens expiring soon            | Tokens are fresh, nothing to do                     |
+| `needs_reauth: true`                    | Refresh token invalid              | User must reconnect via dashboard                   |
+| `John Deere credentials not configured` | Missing vault secrets              | Add secrets per Setup section                       |
+| `HTTP 401: invalid_client`              | Wrong credentials in vault         | Verify client ID/secret match John Deere portal     |
+| `Failed to retrieve encryption key`     | Missing encryption key in Vault    | See [Token Encryption](./token-encryption.md) setup |
+| `Connection requires re-authentication` | Token decryption failed or expired | User must reconnect via dashboard                   |
 
 ## Related
 
