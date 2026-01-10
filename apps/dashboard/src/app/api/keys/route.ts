@@ -6,9 +6,8 @@ import { createClient } from '@/lib/supabase/server';
 const createKeySchema = z.object({
   name: z
     .string()
-    .max(100, 'Name must be 100 characters or less')
-    .optional()
-    .nullable(),
+    .min(1, 'Name is required')
+    .max(100, 'Name must be 100 characters or less'),
 });
 
 export async function POST(request: Request) {
@@ -38,6 +37,26 @@ export async function POST(request: Request) {
 
   const { name } = parsed.data;
 
+  // Check for duplicate name (case-insensitive) before insert
+  const { data: existing } = await supabase
+    .from('api_keys')
+    .select('id')
+    .eq('developer_id', user.id)
+    .eq('is_active', true)
+    .ilike('name', name)
+    .limit(1)
+    .single();
+
+  if (existing) {
+    return NextResponse.json(
+      {
+        error: 'An API key with this name already exists',
+        code: 'DUPLICATE_NAME',
+      },
+      { status: 409 },
+    );
+  }
+
   const { key, prefix } = generateApiKey();
   const keyHash = await hashApiKey(key);
 
@@ -45,10 +64,20 @@ export async function POST(request: Request) {
     developer_id: user.id,
     key_hash: keyHash,
     key_prefix: prefix,
-    name: name || null,
+    name,
   });
 
   if (error) {
+    // Handle race condition - constraint violation from concurrent insert
+    if (error.code === '23505') {
+      return NextResponse.json(
+        {
+          error: 'An API key with this name already exists',
+          code: 'DUPLICATE_NAME',
+        },
+        { status: 409 },
+      );
+    }
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 

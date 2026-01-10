@@ -11,7 +11,7 @@ export interface ApiKey {
   developer_id: string;
   key_hash: string;
   key_prefix: string;
-  name: string | null;
+  name: string;
   is_active: boolean;
   last_used_at: string | null;
   created_at: string;

@@ -29,7 +29,7 @@ interface ApiKey {
   id: string;
   developer_id: string;
   key_prefix: string;
-  name: string | null;
+  name: string;
   is_active: boolean;
   last_used_at: string | null;
   created_at: string;
@@ -168,9 +168,7 @@ export function RealtimeKeysTable({
       <TableBody>
         {keys.map((key) => (
           <TableRow key={key.id}>
-            <TableCell className="font-medium">
-              {key.name || 'Unnamed key'}
-            </TableCell>
+            <TableCell className="font-medium">{key.name}</TableCell>
             <TableCell>
               <code className="rounded bg-muted px-2 py-1 text-sm">
                 {key.key_prefix}...
