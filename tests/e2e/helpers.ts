@@ -61,13 +61,18 @@ export async function rawRequest(
     rawBody?: boolean;
   },
 ): Promise<Response> {
+  // GATEWAY_URL already includes /mcp-gateway, so just append the path suffix
   let url: string;
   if (path === '' || path === '/') {
-    url = `${GATEWAY_URL}/mcp-gateway`;
+    url = GATEWAY_URL;
   } else if (path.startsWith('/mcp-gateway')) {
-    url = `${GATEWAY_URL}${path}`;
+    // For paths like '/mcp-gateway/john-deere', strip the /mcp-gateway prefix
+    // since GATEWAY_URL already ends with it
+    const suffix = path.replace('/mcp-gateway', '');
+    url = suffix ? `${GATEWAY_URL}${suffix}` : GATEWAY_URL;
   } else {
-    url = `${GATEWAY_URL}/mcp-gateway${path}`;
+    // For paths like '/invalid', append directly
+    url = `${GATEWAY_URL}${path}`;
   }
   return fetch(url, {
     method: options?.method ?? 'POST',

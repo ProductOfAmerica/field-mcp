@@ -122,6 +122,7 @@ describe('Security Tests', () => {
     });
 
     it('rejects very large request body', async () => {
+      // MAX_BODY_SIZE is 100KB, so 150KB should trigger rejection
       const largeBody = {
         jsonrpc: '2.0',
         id: 1,
@@ -129,7 +130,7 @@ describe('Security Tests', () => {
         params: {
           name: 'list_organizations',
           arguments: {
-            data: 'x'.repeat(1024 * 1024),
+            data: 'x'.repeat(150 * 1024),
           },
         },
       };

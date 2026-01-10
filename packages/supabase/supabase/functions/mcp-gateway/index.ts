@@ -299,6 +299,11 @@ Deno.serve(async (request: Request): Promise<Response> => {
     return handleCacheInvalidation(request);
   }
 
+  // Only accept requests to the root MCP endpoint
+  if (url.pathname !== '/mcp-gateway' && url.pathname !== '/mcp-gateway/') {
+    return withCors(new ApiError(404, 'Not found', 'NOT_FOUND').toResponse());
+  }
+
   if (request.method !== 'POST') {
     return withCors(
       new ApiError(
