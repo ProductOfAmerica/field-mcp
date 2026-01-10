@@ -77,7 +77,7 @@ ON CONFLICT (id) DO NOTHING;
 
 -- John Deere OAuth connection for E2E testing
 -- Uses farmer_identifier 'test-id' - set TEST_FARMER_ID=test-id in your env
--- Note: Refresh token will auto-refresh access token when expired
+-- Note: Tokens must be encrypted with ChaCha20-Poly1305 using v1 key
 INSERT INTO public.farmer_connections (id,
                                        developer_id,
                                        farmer_identifier,
@@ -86,7 +86,8 @@ INSERT INTO public.farmer_connections (id,
                                        refresh_token_encrypted,
                                        token_expires_at,
                                        scopes,
-                                       is_active)
+                                       is_active,
+                                       token_encryption_version)
 VALUES ('c16d8a9c-19d5-48d8-bbb4-fff7174efac1',
         '00000000-0000-0000-0000-000000000001',
         'test-id',
@@ -95,12 +96,13 @@ VALUES ('c16d8a9c-19d5-48d8-bbb4-fff7174efac1',
         '${TEST_REFRESH_TOKEN_ENCRYPTED}',
         '${TEST_TOKEN_EXPIRES_AT}',
         ARRAY ['ag2', 'ag1', 'offline_access', 'ag3'],
-        true)
+        true,
+        1)
 ON CONFLICT (id) DO NOTHING;
 
--- Token encryption key for local development
+-- Token encryption key for local development (base64 encoded 32-byte key)
 -- This is a test key - DO NOT use in production!
--- Production key should be generated with: openssl rand -hex 32
+-- Production key should be generated with: openssl rand -base64 32
 SELECT vault.create_secret(
   '${TOKEN_ENCRYPTION_KEY}',
   'token_encryption_key_v1'

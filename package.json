@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "turbo build",
-    "dev": "node scripts/dev.js",
+    "dev": "node scripts/dev.js --verbose",
     "start:local": "node scripts/start-local.js",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",

@@ -46,3 +46,9 @@ verify_jwt = false
 
 [functions.mcp-john-deere]
 verify_jwt = false
+
+[functions.store-tokens]
+verify_jwt = false
+
+[functions.refresh-tokens]
+verify_jwt = false

@@ -1,38 +1,82 @@
+import sodium from 'npm:libsodium-wrappers@0.7.15';
 import { getSupabaseClient } from '../supabase-client.ts';
 
-const ALGORITHM = 'AES-GCM';
-const IV_LENGTH = 12; // 96 bits, standard for GCM
-const VERSION_BYTE = 0x01; // Key version 1
+// Initialize libsodium
+await sodium.ready;
 
-// Cached encryption key (per cold start)
-let cachedKey: CryptoKey | null = null;
-let _cachedKeyVersion: number | null = null;
+const NONCE_LENGTH = 12; // ChaCha20-Poly1305 IETF uses 12-byte nonce
+
+// Cache of encryption keys by version (per cold start)
+const keyCache = new Map<number, Uint8Array>();
+
+// Cached current version from DB
+let cachedVersion: number | null = null;
 
 /**
- * Get the encryption key from Supabase Vault via RPC function.
- * Caches the key for the lifetime of the Edge Function instance.
+ * Get the current encryption version from the database.
+ * Cached for the lifetime of the Edge Function instance.
  */
-async function getEncryptionKey(): Promise<CryptoKey> {
-  if (cachedKey) {
-    return cachedKey;
+async function getConfigVersion(): Promise<number> {
+  if (cachedVersion !== null) {
+    return cachedVersion;
   }
 
   const supabase = getSupabaseClient();
 
-  // Call the RPC function that securely accesses the vault
+  // Try the new RPC function first
+  const { data, error } = await supabase.rpc('get_current_encryption_version');
+
+  if (error || data === null) {
+    // Fallback to direct query if RPC doesn't exist yet
+    const { data: configData } = await supabase
+      .from('encryption_key_config')
+      .select('current_version')
+      .eq('id', 1)
+      .single();
+
+    if (configData?.current_version) {
+      cachedVersion = configData.current_version;
+      return cachedVersion;
+    }
+
+    // Default to version 1 if config doesn't exist
+    console.warn('encryption_key_config not found, defaulting to version 1');
+    cachedVersion = 1;
+    return cachedVersion;
+  }
+
+  cachedVersion = data as number;
+  return cachedVersion;
+}
+
+/**
+ * Get an encryption key by version from Supabase Vault.
+ * Keys are cached for the lifetime of the Edge Function instance.
+ */
+async function getEncryptionKeyByVersion(version: number): Promise<Uint8Array> {
+  const cached = keyCache.get(version);
+  if (cached) {
+    return cached;
+  }
+
+  const supabase = getSupabaseClient();
+  const keyName = `token_encryption_key_v${version}`;
+
   const { data, error } = await supabase.rpc('get_encryption_key', {
-    key_name: 'token_encryption_key_v1',
+    key_name: keyName,
   });
 
   if (error || !data) {
     throw new Error(
-      `Failed to retrieve encryption key from Vault: ${error?.message ?? 'Key not found'}`,
+      `Failed to retrieve encryption key v${version} from Vault: ${error?.message ?? 'Key not found'}`,
     );
   }
 
-  // Key is stored as hex string (64 chars = 32 bytes = 256 bits)
-  const keyHex = data;
-  const keyBytes = hexToBytes(keyHex);
+  // Key is stored as base64 string
+  const keyBytes = sodium.from_base64(
+    data as string,
+    sodium.base64_variants.ORIGINAL,
+  );
 
   if (keyBytes.length !== 32) {
     throw new Error(
@@ -40,86 +84,83 @@ async function getEncryptionKey(): Promise<CryptoKey> {
     );
   }
 
-  cachedKey = await crypto.subtle.importKey(
-    'raw',
-    keyBytes,
-    { name: ALGORITHM },
-    false, // not extractable
-    ['encrypt', 'decrypt'],
-  );
-
-  _cachedKeyVersion = VERSION_BYTE;
-  return cachedKey;
+  keyCache.set(version, keyBytes);
+  return keyBytes;
 }
 
 /**
- * Encrypt a plaintext token using AES-256-GCM.
+ * Encrypt a plaintext token using ChaCha20-Poly1305 IETF.
+ * Compatible with pgsodium's crypto_aead_ietf_encrypt.
  *
- * Output format: base64([version byte][12 bytes IV][ciphertext + auth tag])
+ * Output format: base64([version byte][12 bytes nonce][ciphertext + auth tag])
  */
 export async function encryptToken(plaintext: string): Promise<string> {
-  const key = await getEncryptionKey();
+  const version = await getConfigVersion();
+  const key = await getEncryptionKeyByVersion(version);
 
-  // Generate random IV
-  const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
+  // Generate random 12-byte nonce
+  const nonce = sodium.randombytes_buf(NONCE_LENGTH);
 
-  // Encode plaintext to bytes
-  const plaintextBytes = new TextEncoder().encode(plaintext);
-
-  // Encrypt (GCM automatically appends 16-byte auth tag)
-  const ciphertext = await crypto.subtle.encrypt(
-    { name: ALGORITHM, iv },
+  // Encrypt using ChaCha20-Poly1305 IETF (compatible with pgsodium)
+  const ciphertext = sodium.crypto_aead_chacha20poly1305_ietf_encrypt(
+    sodium.from_string(plaintext),
+    null, // no additional data
+    null, // no secret nonce
+    nonce,
     key,
-    plaintextBytes,
   );
 
-  // Combine: [version][iv][ciphertext+tag]
-  const combined = new Uint8Array(
-    1 + IV_LENGTH + new Uint8Array(ciphertext).length,
-  );
-  combined[0] = VERSION_BYTE;
-  combined.set(iv, 1);
-  combined.set(new Uint8Array(ciphertext), 1 + IV_LENGTH);
+  // Combine: [version:1][nonce:12][ciphertext+tag]
+  const combined = new Uint8Array(1 + NONCE_LENGTH + ciphertext.length);
+  combined[0] = version;
+  combined.set(nonce, 1);
+  combined.set(ciphertext, 1 + NONCE_LENGTH);
 
-  // Encode as base64 for storage in TEXT column
-  return bytesToBase64(combined);
+  return sodium.to_base64(combined, sodium.base64_variants.ORIGINAL);
 }
 
 /**
- * Decrypt an encrypted token using AES-256-GCM.
+ * Decrypt an encrypted token using ChaCha20-Poly1305 IETF.
+ * Automatically uses the correct key version based on the version byte in the data.
  *
- * Expects format: base64([version byte][12 bytes IV][ciphertext + auth tag])
+ * Expects format: base64([version byte][12 bytes nonce][ciphertext + auth tag])
  */
 export async function decryptToken(encrypted: string): Promise<string> {
-  const combined = base64ToBytes(encrypted);
+  const combined = sodium.from_base64(
+    encrypted,
+    sodium.base64_variants.ORIGINAL,
+  );
 
-  if (combined.length < 1 + IV_LENGTH + 16) {
+  if (combined.length < 1 + NONCE_LENGTH + 16) {
     throw new Error('Invalid encrypted token: too short');
   }
 
   const version = combined[0];
-  if (version !== VERSION_BYTE) {
-    throw new Error(`Unsupported encryption version: ${version}`);
+  if (version < 1 || version > 255) {
+    throw new Error(`Invalid encryption version: ${version}`);
   }
 
-  const iv = combined.slice(1, 1 + IV_LENGTH);
-  const ciphertext = combined.slice(1 + IV_LENGTH);
+  const nonce = combined.slice(1, 1 + NONCE_LENGTH);
+  const ciphertext = combined.slice(1 + NONCE_LENGTH);
 
-  const key = await getEncryptionKey();
+  // Automatically fetch the correct key for this version
+  const key = await getEncryptionKeyByVersion(version);
 
-  const decrypted = await crypto.subtle.decrypt(
-    { name: ALGORITHM, iv },
-    key,
+  const plaintext = sodium.crypto_aead_chacha20poly1305_ietf_decrypt(
+    null, // no secret nonce
     ciphertext,
+    null, // no additional data
+    nonce,
+    key,
   );
 
-  return new TextDecoder().decode(decrypted);
+  return sodium.to_string(plaintext);
 }
 
 /**
  * Check if a value is encrypted (vs legacy Base64 encoding).
  *
- * Encrypted values start with version byte 0x01, which encodes to "AQ" in base64.
+ * Encrypted values start with a version byte (0x01-0x0A).
  * Legacy JWT tokens start with "eyJ" (base64 of '{"').
  */
 export function isEncrypted(value: string): boolean {
@@ -128,9 +169,9 @@ export function isEncrypted(value: string): boolean {
   }
 
   try {
-    const decoded = base64ToBytes(value);
-    // Check for version byte
-    return decoded[0] === VERSION_BYTE;
+    const decoded = sodium.from_base64(value, sodium.base64_variants.ORIGINAL);
+    // Version bytes are 1-10, legacy JWTs would decode to 0x7b ('{')
+    return decoded[0] >= 1 && decoded[0] <= 10;
   } catch {
     return false;
   }
@@ -153,38 +194,19 @@ export async function decryptTokenCompat(encrypted: string): Promise<string> {
   }
 }
 
-// Helper functions for byte/string conversions
-
-function hexToBytes(hex: string): Uint8Array {
-  const bytes = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < bytes.length; i++) {
-    bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
-  }
-  return bytes;
-}
-
-function bytesToBase64(bytes: Uint8Array): string {
-  let binary = '';
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
-}
-
-function base64ToBytes(base64: string): Uint8Array {
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes;
-}
-
 /**
- * Clear the cached encryption key.
+ * Clear all cached encryption keys and version.
  * Useful for testing or when rotating keys.
  */
 export function clearKeyCache(): void {
-  cachedKey = null;
-  _cachedKeyVersion = null;
+  keyCache.clear();
+  cachedVersion = null;
+}
+
+/**
+ * Get the current encryption version.
+ * New tokens are encrypted with this version.
+ */
+export async function getCurrentVersion(): Promise<number> {
+  return getConfigVersion();
 }

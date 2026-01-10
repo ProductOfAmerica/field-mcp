@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@fieldmcp/ui/components/button';
 import { Input } from '@fieldmcp/ui/components/input';
 import { Separator } from '@fieldmcp/ui/components/separator';
