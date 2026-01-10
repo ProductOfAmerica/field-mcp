@@ -1,6 +1,14 @@
+import {
+  DEFAULT_TIMEOUT_MS,
+  FetchError,
+  fetchWithRetry,
+} from '../../core/fetch-utils.ts';
+
 interface DeereClientOptions {
   baseUrl: string;
   accessToken: string;
+  /** Request timeout in milliseconds (default: 30000) */
+  timeoutMs?: number;
 }
 
 interface JDApiResponse<T> {
@@ -88,25 +96,55 @@ interface JDAsset {
 export class DeereApiClient {
   private baseUrl: string;
   private accessToken: string;
+  private timeoutMs: number;
 
   constructor(options: DeereClientOptions) {
     this.baseUrl = options.baseUrl;
     this.accessToken = options.accessToken;
+    this.timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   }
 
   private async request<T>(path: string): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${path}`, {
-      headers: {
-        Authorization: `Bearer ${this.accessToken}`,
-        Accept: 'application/vnd.deere.axiom.v3+json',
-      },
-    });
+    const url = `${this.baseUrl}${path}`;
 
-    if (!response.ok) {
-      throw new Error(`John Deere API error: ${response.status}`);
+    try {
+      const response = await fetchWithRetry(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`,
+            Accept: 'application/vnd.deere.axiom.v3+json',
+          },
+        },
+        {
+          timeoutMs: this.timeoutMs,
+          retry: {
+            maxRetries: 2, // 3 total attempts
+            baseDelayMs: 1000,
+            maxDelayMs: 5000,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        const errorBody = await response.text().catch(() => '');
+        throw new Error(
+          `John Deere API error: ${response.status} ${response.statusText}${errorBody ? ` - ${errorBody}` : ''}`,
+        );
+      }
+
+      return response.json() as Promise<T>;
+    } catch (error) {
+      if (error instanceof FetchError) {
+        if (error.isTimeout) {
+          throw new Error(
+            `John Deere API request timed out after ${this.timeoutMs}ms`,
+          );
+        }
+        throw new Error(`John Deere API error: ${error.message}`);
+      }
+      throw error;
     }
-
-    return response.json() as Promise<T>;
   }
 
   async getOrganizations(): Promise<JDApiResponse<JDOrganization>> {
