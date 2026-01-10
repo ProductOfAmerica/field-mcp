@@ -1,10 +1,10 @@
 {
   "$schema": "https://turborepo.com/schema.json",
-  "globalDependencies": [".env"],
+  "globalDependencies": [".env.local"],
   "globalEnv": ["NODE_ENV"],
   "tasks": {
     "build": {
-      "dependsOn": ["copy-types", "^build"],
+      "dependsOn": ["//#copy-types", "^build"],
       "inputs": [
         "$TURBO_DEFAULT$",
         ".env.local",
@@ -28,8 +28,8 @@
       ]
     },
     "check": {
-      "dependsOn": ["copy-types", "^check"],
-      "inputs": ["$TURBO_DEFAULT$", "tsconfig.json"],
+      "dependsOn": ["//#copy-types", "^check"],
+      "inputs": ["$TURBO_DEFAULT$", "tsconfig.json", "$TURBO_ROOT$/tsconfig.json"],
       "outputs": []
     },
     "lint": {
@@ -43,8 +43,8 @@
     "clean": {
       "cache": false
     },
-    "copy-types": {
-      "inputs": ["packages/types/src/**/*.ts"],
+    "//#copy-types": {
+      "inputs": ["packages/types/src/**/*.ts", "scripts/copy-types.js"],
       "outputs": ["packages/supabase/supabase/functions/_shared/types/**"],
       "cache": true
     }

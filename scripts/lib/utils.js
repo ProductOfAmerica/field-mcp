@@ -312,7 +312,7 @@ export function setupCleanup(processes, stopSupabase = true) {
 
 export function copyTypes() {
   log('TYPES', colors.yellow, 'Copying shared types to Edge Functions...');
-  execSync('node scripts/copy-types.js', { stdio: 'inherit' });
+  execSync('turbo run //#copy-types', { stdio: 'inherit' });
 }
 
 /**
