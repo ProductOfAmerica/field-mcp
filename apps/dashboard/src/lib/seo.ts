@@ -128,9 +128,6 @@ export function createRootMetadata(baseUrl: string): Metadata {
         'max-snippet': -1,
       },
     },
-    verification: {
-      google: 'YOUR_GOOGLE_VERIFICATION_CODE',
-    },
     formatDetection: {
       email: false,
       address: false,
