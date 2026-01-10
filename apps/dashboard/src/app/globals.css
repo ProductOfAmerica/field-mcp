@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "@fieldmcp/ui/styles/globals.css";
 
+@plugin "@tailwindcss/typography";
+
 @source "../../node_modules/@fieldmcp/ui";
 
 @theme inline {

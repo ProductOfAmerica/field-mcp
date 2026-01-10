@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "check": "tsc --noEmit",
-    "lint": "biome check app/ components/ lib/"
+    "lint": "biome check app/ components/ lib/",
+    "legal:all": "tsx scripts/generate-legal-docs.ts all"
   },
   "dependencies": {
     "@fieldmcp/types": "workspace:*",
@@ -23,18 +24,22 @@
     "next-themes": "^0.4.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
     "recharts": "2.15.4",
+    "remark-gfm": "^4.0.1",
     "server-only": "^0.0.1",
     "stripe": "^20.1.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "postcss": "^8.0.0",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }
