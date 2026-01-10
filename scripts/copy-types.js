@@ -15,23 +15,41 @@ const destDir = join(
 // Files to copy (skip mcp.ts due to @modelcontextprotocol/sdk dependency)
 const filesToCopy = ['database.ts', 'fieldmcp.ts', 'john-deere.ts'];
 
-mkdirSync(destDir, { recursive: true });
-
-for (const file of filesToCopy) {
-  let content = readFileSync(join(srcDir, file), 'utf-8');
+/**
+ * Transforms a type file for Deno compatibility and adds header comment.
+ * @param {string} content - Original file content
+ * @param {string} filename - Source filename for header
+ * @returns {string} Transformed content
+ */
+function transformForDeno(content, filename) {
   // Transform .js imports to .ts for Deno
-  content = content.replace(/from '\.\/(.+)\.js'/g, "from './$1.ts'");
-  // Add header comment
-  content = `// AUTO-GENERATED - DO NOT EDIT\n// Source: packages/types/src/${file}\n// Run: pnpm copy-types\n\n${content}`;
-  writeFileSync(join(destDir, file), content);
+  const transformed = content.replace(/from '\.\/(.+)\.js'/g, "from './$1.ts'");
+  const header = `// AUTO-GENERATED - DO NOT EDIT\n// Source: packages/types/src/${filename}\n// Run: pnpm copy-types\n\n`;
+  return header + transformed;
 }
 
-// Create index.ts barrel
-const indexContent = `// AUTO-GENERATED - DO NOT EDIT
+try {
+  mkdirSync(destDir, { recursive: true });
+
+  for (const file of filesToCopy) {
+    const srcPath = join(srcDir, file);
+    const destPath = join(destDir, file);
+
+    const content = readFileSync(srcPath, 'utf-8');
+    const transformed = transformForDeno(content, file);
+    writeFileSync(destPath, transformed);
+  }
+
+  // Create index.ts barrel
+  const indexContent = `// AUTO-GENERATED - DO NOT EDIT
 export * from './database.ts';
 export * from './fieldmcp.ts';
 export * from './john-deere.ts';
 `;
-writeFileSync(join(destDir, 'index.ts'), indexContent);
+  writeFileSync(join(destDir, 'index.ts'), indexContent);
 
-console.log('✓ Types copied to _shared/types/');
+  console.log('✓ Types copied to _shared/types/');
+} catch (err) {
+  console.error(`✗ Failed to copy types: ${err.message}`);
+  process.exit(1);
+}

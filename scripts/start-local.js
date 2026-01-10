@@ -1,29 +1,48 @@
 #!/usr/bin/env node
 
-import { execSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import {
-  checkDependencies,
-  checkDockerRunning,
+  attachPrefixedOutputHandlers,
   colors,
   DASHBOARD_DIR,
+  initializeEnvironment,
   log,
+  logInfo,
   setupCleanup,
   spawnWithPrefix,
-  startStripeWebhook,
   startSupabase,
   startSupabaseFunctions,
-  updateEnvFile,
 } from './lib/utils.js';
 
-function copyTypes() {
-  log('TYPES', colors.yellow, 'Copying shared types to Edge Functions...');
-  execSync('node scripts/copy-types.js', { stdio: 'inherit' });
-}
-
+/**
+ * Builds Next.js for production asynchronously.
+ * Returns a Promise that resolves when the build completes.
+ */
 function buildNext() {
   log('NEXT', colors.blue, 'Building Next.js for production...');
-  execSync('pnpm build', { cwd: DASHBOARD_DIR, stdio: 'inherit' });
-  log('NEXT', colors.blue, 'Build complete!');
+
+  return new Promise((resolve, reject) => {
+    const proc = spawn('pnpm', ['build'], {
+      cwd: DASHBOARD_DIR,
+      shell: true,
+      stdio: 'pipe',
+    });
+
+    attachPrefixedOutputHandlers(proc, 'NEXT', colors.blue);
+
+    proc.on('error', (err) => {
+      reject(new Error(`Failed to spawn Next.js build: ${err.message}`));
+    });
+
+    proc.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(`Next.js build failed with code ${code}`));
+        return;
+      }
+      log('NEXT', colors.blue, 'Build complete!');
+      resolve();
+    });
+  });
 }
 
 function startNextProd() {
@@ -34,49 +53,29 @@ function startNextProd() {
 async function main() {
   console.log('\n🌾 FieldMCP Local Production Environment\n');
 
-  checkDockerRunning();
-  const { hasStripe } = checkDependencies();
-  copyTypes();
+  const { stripeProc } = await initializeEnvironment();
 
-  const supabaseCreds = await startSupabase();
+  // Run Supabase start and Next.js build in PARALLEL
+  // This is the main optimization - these two can run concurrently
+  logInfo('Starting Supabase and Next.js build in parallel...');
+
+  const [supabaseCreds] = await Promise.all([startSupabase(), buildNext()]);
+
   log('SUPABASE', colors.green, 'Started successfully!');
-
   if (supabaseCreds.studioUrl) {
     log('SUPABASE', colors.green, `Studio: ${supabaseCreds.studioUrl}`);
   }
 
-  let stripeProc = null;
-  let stripeWebhookSecret = null;
-
-  if (hasStripe) {
-    const stripe = await startStripeWebhook();
-    stripeProc = stripe.proc;
-    stripeWebhookSecret = stripe.webhookSecret;
-  }
-
-  updateEnvFile(supabaseCreds, stripeWebhookSecret);
-
-  buildNext();
-
+  // Start the services now that both Supabase and build are ready
   const functionsProc = startSupabaseFunctions();
   const nextProc = startNextProd();
 
   console.log(`\n${'─'.repeat(50)}`);
-  log('INFO', colors.cyan, 'All services started in PRODUCTION mode!');
-  log('INFO', colors.cyan, 'Dashboard: http://localhost:3000');
-  log(
-    'INFO',
-    colors.cyan,
-    'MCP Gateway: http://127.0.0.1:54321/functions/v1/mcp-gateway',
-  );
-  log(
-    'INFO',
-    colors.cyan,
-    'John Deere MCP: http://127.0.0.1:54321/functions/v1/mcp-john-deere',
-  );
-  log(
-    'INFO',
-    colors.cyan,
+  logInfo('All services started in PRODUCTION mode!');
+  logInfo('Dashboard: http://localhost:3000');
+  logInfo('MCP Gateway: http://127.0.0.1:54321/functions/v1/mcp-gateway');
+  logInfo('John Deere MCP: http://127.0.0.1:54321/functions/v1/mcp-john-deere');
+  logInfo(
     `Supabase Studio: ${supabaseCreds.studioUrl || 'http://127.0.0.1:54323'}`,
   );
   console.log(`${'─'.repeat(50)}\n`);
