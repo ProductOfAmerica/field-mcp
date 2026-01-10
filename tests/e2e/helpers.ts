@@ -66,7 +66,7 @@ export async function rawRequest(
   if (path === '' || path === '/') {
     url = GATEWAY_URL;
   } else if (path.startsWith('/mcp-gateway')) {
-    // For paths like '/mcp-gateway/john-deere', strip the /mcp-gateway prefix
+    // For paths like '/mcp-gateway/health', strip the /mcp-gateway prefix
     // since GATEWAY_URL already ends with it
     const suffix = path.replace('/mcp-gateway', '');
     url = suffix ? `${GATEWAY_URL}${suffix}` : GATEWAY_URL;

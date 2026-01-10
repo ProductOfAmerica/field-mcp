@@ -31,9 +31,11 @@ import {
   validateFarmerId,
   validateJsonDepth,
 } from '../_shared/core/validation.ts';
-
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
-const JOHN_DEERE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/mcp-john-deere`;
+import {
+  type DeereRequest,
+  type DeereResponse,
+  handleDeereRequest,
+} from '../_shared/providers/deere/deere-handler.ts';
 
 async function handleMcpRequest(request: Request): Promise<Response> {
   const startTime = Date.now();
@@ -143,12 +145,10 @@ async function handleMcpRequest(request: Request): Promise<Response> {
   let statusCode: number;
   try {
     response = await routeToProvider(
-      sanitizedBody,
+      sanitizedBody as DeereRequest,
       provider,
       developer.id,
       farmerId!,
-      keyId,
-      subscription.tier,
     );
     statusCode = response.status;
   } catch (e) {
@@ -178,29 +178,30 @@ async function handleMcpRequest(request: Request): Promise<Response> {
 }
 
 async function routeToProvider(
-  body: unknown,
+  body: DeereRequest,
   provider: Provider,
   developerId: string,
   farmerId: string,
-  apiKeyId: string,
-  tier: string,
 ): Promise<Response> {
   switch (provider) {
     case 'john_deere': {
-      if (!JOHN_DEERE_FUNCTION_URL) {
-        throw new Error('JOHN_DEERE_FUNCTION_URL not configured');
+      // Direct function call - no HTTP hop
+      const result: DeereResponse = await handleDeereRequest(
+        body,
+        developerId,
+        farmerId,
+      );
+
+      if (result.error) {
+        return new Response(JSON.stringify({ error: result.error }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        });
       }
 
-      return await fetch(JOHN_DEERE_FUNCTION_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Developer-ID': developerId,
-          'X-Farmer-ID': farmerId,
-          'X-API-Key-ID': apiKeyId,
-          'X-Tier': tier,
-        },
-        body: JSON.stringify(body),
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
       });
     }
     default:

@@ -10,7 +10,8 @@
       "mcp__next-devtools-mcp__nextjs_call",
       "mcp__supabase__search_docs",
       "mcp__next-devtools-mcp__nextjs_docs",
-      "mcp__supabase__list_extensions"
+      "mcp__supabase__list_extensions",
+      "mcp__supabase__get_logs"
     ],
     "deny": [],
     "ask": []

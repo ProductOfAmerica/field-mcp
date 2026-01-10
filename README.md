@@ -16,27 +16,24 @@ flowchart TB
     subgraph Client
         A[Developer App<br/>Claude, etc]
     end
-    
+
     subgraph Supabase
         subgraph Edge Functions
             B[mcp-gateway]
-            C[mcp-john-deere]
         end
         D[(PostgreSQL<br/>Auth, DB, Cache)]
     end
-    
+
     E[John Deere API]
-    
+
     A --> B
-    B --> C
     B --> D
-    C --> D
-    C --> E
+    B --> E
 ```
 
 ## Tech Stack
 
-- **Supabase Edge Functions**: MCP servers (mcp-gateway, mcp-john-deere) - Deno runtime
+- **Supabase Edge Functions**: MCP server (mcp-gateway) - Deno runtime
 - **Supabase PostgreSQL**: Auth, DB, encrypted token storage, cache tables
 - **Vercel**: Next.js 16 dashboard
 - **Turborepo**: Monorepo orchestration
@@ -81,8 +78,7 @@ fieldmcp/
 │       └── supabase/
 │           ├── functions/
 │           │   ├── _shared/          # Shared code for Edge Functions
-│           │   ├── mcp-gateway/      # API gateway - auth, rate limits, routing
-│           │   └── mcp-john-deere/   # John Deere MCP server
+│           │   └── mcp-gateway/      # Unified MCP server - auth, rate limits, provider calls
 │           └── migrations/           # Database migrations
 └── docs/
     └── plans/                        # Execution plans

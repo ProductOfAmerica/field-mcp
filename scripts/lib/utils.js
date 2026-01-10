@@ -453,9 +453,30 @@ export function copyTypes() {
 }
 
 /**
+ * Generates seed.sql from seed.sql.template using environment variables.
+ * Must be called before Supabase starts so the seed is applied correctly.
+ */
+export function generateSeed() {
+  log('SEED', colors.green, 'Generating seed.sql from template...');
+  try {
+    execSync('node scripts/generate-seed.js', {
+      cwd: SUPABASE_DIR,
+      stdio: 'pipe',
+    });
+    log('SEED', colors.green, 'Done');
+  } catch (err) {
+    // Show error output if it fails
+    if (err.stdout) process.stdout.write(err.stdout);
+    if (err.stderr) process.stderr.write(err.stderr);
+    throw new Error('Failed to generate seed.sql - check your .env.local');
+  }
+}
+
+/**
  * Performs common initialization for dev/start scripts:
  * - Checks Docker is running
  * - Checks dependencies (Supabase CLI, optionally Stripe CLI)
+ * - Generates seed.sql from template (before Supabase starts)
  * - Copies shared types to Edge Functions
  * - Starts Stripe webhook listener (if available)
  * - Updates .env.local with local credentials
@@ -465,6 +486,7 @@ export function copyTypes() {
 export async function initializeEnvironment() {
   checkDockerRunning();
   const { hasStripe } = checkDependencies();
+  generateSeed();
   copyTypes();
 
   let stripeProc = null;
