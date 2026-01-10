@@ -135,8 +135,11 @@ export default function PricingPage() {
 
                     {/* Features */}
                     <div className="flex flex-col gap-3">
-                      {tier.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-start gap-2 py-1">
+                      {tier.features.map((feature) => (
+                        <div
+                          key={feature}
+                          className="flex items-start gap-2 py-1"
+                        >
                           <CircleIcon className="bg-primary mt-2 size-2 shrink-0 rounded-full" />
                           <p className="text-base">{feature}</p>
                         </div>
