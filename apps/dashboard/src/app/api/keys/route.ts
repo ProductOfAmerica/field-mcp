@@ -43,9 +43,9 @@ export async function POST(request: Request) {
     .select('id')
     .eq('developer_id', user.id)
     .eq('is_active', true)
-    .ilike('name', name)
+    .ilike('name', name.replace(/%/g, '\\%').replace(/_/g, '\\_'))
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (existing) {
     return NextResponse.json(

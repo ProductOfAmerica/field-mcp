@@ -40,9 +40,12 @@ export async function GET(request: Request) {
     .select('id, is_active')
     .eq('developer_id', user.id)
     .eq('provider', provider)
-    .ilike('farmer_identifier', farmer_id)
+    .ilike(
+      'farmer_identifier',
+      farmer_id.replace(/%/g, '\\%').replace(/_/g, '\\_'),
+    )
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (existing) {
     return NextResponse.json({
