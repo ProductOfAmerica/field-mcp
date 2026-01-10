@@ -4,12 +4,13 @@
       "Bash(pnpm lint:fix:*)",
       "Bash(pnpm check:*)",
       "Bash(pnpm install:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(ls:*)",
       "mcp__next-devtools-mcp__nextjs_index",
       "mcp__next-devtools-mcp__nextjs_call",
       "mcp__supabase__search_docs",
       "mcp__next-devtools-mcp__nextjs_docs",
-      "Bash(pnpm lint:*)",
-      "WebFetch(domain:supabase.com)"
+      "mcp__supabase__list_extensions"
     ],
     "deny": [],
     "ask": []
