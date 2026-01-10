@@ -1,7 +1,18 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "globalDependencies": [".env.local"],
-  "globalEnv": ["NODE_ENV"],
+  "globalEnv": [
+    "NODE_ENV",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_DEVELOPER_PRICE_ID",
+    "STRIPE_STARTUP_PRICE_ID",
+    "SUPABASE_SERVICE_KEY",
+    "JOHN_DEERE_CLIENT_ID",
+    "JOHN_DEERE_CLIENT_SECRET",
+    "JOHN_DEERE_REDIRECT_URI",
+    "STRIPE_WEBHOOK_SECRET",
+    "GATEWAY_INTERNAL_SECRET"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["//#copy-types", "^build"],
